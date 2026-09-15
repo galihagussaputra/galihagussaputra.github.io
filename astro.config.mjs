@@ -4,7 +4,7 @@ import mdx from '@astrojs/mdx';
 import sitemap from '@astrojs/sitemap';
 
 export default defineConfig({
-  site: 'https://galih17421010.github.io',
+  site: 'https://galihagussaputra.github.io',
   base: '/',
   output: 'static',
   integrations: [mdx(), sitemap()],
