@@ -1,6 +1,6 @@
 # Galih.dev - Portfolio & Blog
 
-Personal portfolio website milik Galih Agus Saputra, seorang Software Developer. Situs ini dibangun dengan **Astro** dan **MDX**, di-deploy ke **GitHub Pages**.
+Personal portfolio website yang dibangun dengan **Astro** dan **MDX**, di-deploy ke **GitHub Pages**.
 
 ## Fitur
 
