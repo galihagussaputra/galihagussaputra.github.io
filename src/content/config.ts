@@ -1,5 +1,7 @@
 import { defineCollection, z } from 'astro:content';
 
+const lang = z.enum(['en', 'id']).default('id');
+
 const about = defineCollection({
   type: 'content',
   schema: z.object({
@@ -10,6 +12,8 @@ const about = defineCollection({
     heroTagline: z.string(),
     heroSubtitle: z.string(),
     avatar: z.string().optional(),
+    lang,
+    translationKey: z.string(),
   }),
 });
 
@@ -22,6 +26,8 @@ const skills = defineCollection({
     icon: z.string().default('fa-solid fa-code'),
     order: z.number().default(0),
     color: z.string().optional(),
+    title_en: z.string().optional(),
+    description_en: z.string().optional(),
   }),
 });
 
@@ -38,6 +44,13 @@ const projects = defineCollection({
     status: z.enum(['in-progress', 'completed', 'planned']).default('in-progress'),
     order: z.number().default(0),
     pubDate: z.coerce.date(),
+    problem: z.string().optional(),
+    contribution: z.string().optional(),
+    challenges: z.string().optional(),
+    image: z.string().optional(),
+    lang,
+    translationKey: z.string(),
+    routeSlug: z.string().optional(),
   }),
 });
 
@@ -51,6 +64,9 @@ const posts = defineCollection({
     tags: z.array(z.string()).default([]),
     draft: z.boolean().default(false),
     image: z.string().optional(),
+    lang,
+    translationKey: z.string(),
+    routeSlug: z.string().optional(),
   }),
 });
 

@@ -1,0 +1,48 @@
+---
+title: 'Building a Dynamic Portfolio with Astro & MDX'
+description: 'How to build a portfolio whose content is easy to edit using MDX, and deploy it for free to GitHub Pages.'
+pubDate: 2025-08-10
+tags: ['Astro', 'MDX', 'GitHub Pages']
+lang: 'en'
+translationKey: 'astro-mdx-portfolio'
+routeSlug: 'astro-mdx-portfolio'
+---
+
+A conventional static portfolio (HTML/CSS/JS) forces us to touch code every time we want to update content. With **MDX**, we can write content in a rich markdown format — complete with interactive components — without changing the page structure.
+
+## Why Astro?
+
+- **Static output** — perfect for GitHub Pages (automatic SSL)
+- **Native MDX** — supports Content Collections
+- **Zero client JS by default** — very fast
+
+## Content Structure
+
+```
+src/content/
+├── about/
+├── skills/
+├── projects/
+└── posts/
+```
+
+Every `.mdx` file has **frontmatter** (metadata) and a **body** (content). Metadata is validated by the schema in `src/content/config.ts`.
+
+## Deploying to GitHub Pages
+
+With GitHub Actions, every push to `main` builds and deploys automatically. SSL is available for free via `https://username.github.io`.
+
+## Example Code
+
+```js
+// src/pages/blog/[...slug].astro
+export async function getStaticPaths() {
+  const posts = await getCollection('posts', ({ data }) => !data.draft);
+  return posts.map((post) => ({
+    params: { slug: post.slug },
+    props: { post },
+  }));
+}
+```
+
+Give it a try!

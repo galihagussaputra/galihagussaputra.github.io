@@ -1,0 +1,37 @@
+---
+title: 'Web Application Performance Optimization Tips'
+description: 'A set of best practices for building fast web applications: from bundle size to image optimization.'
+pubDate: 2025-07-22
+tags: ['Performance', 'Web', 'Tips']
+lang: 'en'
+translationKey: 'performansi-web'
+routeSlug: 'performansi-web'
+---
+
+Performance is experience. These are a few practices I apply in every project.
+
+## 1. Reduce Bundle Size
+
+Code splitting and tree shaking are the foundation of optimization. Use dynamic imports for modules that are rarely used.
+
+```js
+// lazy load a large component
+const Chart = await import('./Chart.js');
+```
+
+## 2. Optimize Images
+
+- Use modern formats such as **WebP/AVIF**
+- Apply `loading="lazy"` to images below the fold
+- Image dimensions should match the rendered size
+
+## 3. Make Use of Caching
+
+Set the right `Cache-Control` headers for static assets, and use a CDN for global distribution.
+
+## 4. Measure with Tools
+
+- **Lighthouse** — a quick and thorough audit
+- **WebPageTest** — deeper analysis
+
+Remember: the best optimization is the one whose impact you can measure.

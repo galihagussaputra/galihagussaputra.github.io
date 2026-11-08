@@ -7,7 +7,25 @@ export default defineConfig({
   site: 'https://galihagussaputra.github.io',
   base: '/',
   output: 'static',
-  integrations: [mdx(), sitemap()],
+  i18n: {
+    defaultLocale: 'en',
+    locales: ['en', 'id'],
+    routing: {
+      prefixDefaultLocale: false,
+    },
+  },
+  integrations: [
+    mdx(),
+    sitemap({
+      i18n: {
+        defaultLocale: 'en',
+        locales: {
+          en: 'en',
+          id: 'id',
+        },
+      },
+    }),
+  ],
   markdown: {
     shikiConfig: {
       theme: 'github-dark',
