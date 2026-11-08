@@ -1,0 +1,97 @@
+---
+import { site } from '../data/site';
+import type { Lang } from '../i18n/ui';
+import { getAlternatePaths, localizePath } from '../i18n/utils';
+
+interface Props {
+  title: string;
+  description: string;
+  lang: Lang;
+  enPath?: string;
+  idPath?: string;
+  type?: 'website' | 'article' | 'profile';
+  publishedTime?: Date | string;
+  modifiedTime?: Date | string;
+  tags?: string[];
+  image?: string;
+  noindex?: boolean;
+  jsonLd?: Record<string, unknown> | Record<string, unknown>[];
+}
+
+const {
+  title,
+  description,
+  lang,
+  type = 'website',
+  publishedTime,
+  modifiedTime,
+  tags,
+  image,
+  noindex = false,
+  jsonLd,
+} = Astro.props;
+
+const base = Astro.site ?? new URL(site.url);
+const fallbackPaths = getAlternatePaths(Astro.url.pathname);
+const enPath = Astro.props.enPath ?? fallbackPaths.en;
+const idPath = Astro.props.idPath ?? fallbackPaths.id;
+const currentPath = lang === 'id' ? idPath : enPath;
+
+const canonical = new URL(currentPath, base);
+const enUrl = new URL(enPath, base);
+const idUrl = new URL(idPath, base);
+const ogLocale = lang === 'id' ? 'id_ID' : 'en_US';
+const ogLocaleAlternate = lang === 'id' ? 'en_US' : 'id_ID';
+const imageUrl = image ? new URL(image, base) : undefined;
+
+const structuredData = jsonLd
+  ? Array.isArray(jsonLd)
+    ? jsonLd
+    : [jsonLd]
+  : [];
+
+const safeJson = JSON.stringify(structuredData).replace(/</g, '\\u003c');
+---
+
+<title>{title}</title>
+<meta name="description" content={description} />
+<meta name="author" content={site.name} />
+<meta name="generator" content={Astro.generator} />
+{noindex && <meta name="robots" content="noindex, nofollow" />}
+<link rel="canonical" href={canonical} />
+
+<link rel="alternate" hreflang="en" href={enUrl} />
+<link rel="alternate" hreflang="id" href={idUrl} />
+<link rel="alternate" hreflang="x-default" href={enUrl} />
+<link
+  rel="alternate"
+  type="application/rss+xml"
+  title={`${site.brand} — ${lang === 'id' ? 'Catatan' : 'Notes'}`}
+  href={new URL(localizePath('/rss.xml', lang), base)}
+/>
+
+<meta property="og:type" content={type} />
+<meta property="og:site_name" content={site.brand} />
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description} />
+<meta property="og:url" content={canonical} />
+<meta property="og:locale" content={ogLocale} />
+<meta property="og:locale:alternate" content={ogLocaleAlternate} />
+{imageUrl && <meta property="og:image" content={imageUrl} />}
+{publishedTime && (
+  <meta property="article:published_time" content={new Date(publishedTime).toISOString()} />
+)}
+{modifiedTime && (
+  <meta property="article:modified_time" content={new Date(modifiedTime).toISOString()} />
+)}
+{tags?.map((tag) => <meta property="article:tag" content={tag} />)}
+
+<meta name="twitter:card" content={imageUrl ? 'summary_large_image' : 'summary'} />
+<meta name="twitter:title" content={title} />
+<meta name="twitter:description" content={description} />
+{imageUrl && <meta name="twitter:image" content={imageUrl} />}
+
+<meta name="theme-color" media="(prefers-color-scheme: light)" content="#f5f2ea" />
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#151515" />
+
+{structuredData.length > 0 && <script type="application/ld+json" set:html={safeJson} />}

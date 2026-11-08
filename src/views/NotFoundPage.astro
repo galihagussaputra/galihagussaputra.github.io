@@ -1,0 +1,73 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { site } from '../data/site';
+import { useTranslations, type Lang } from '../i18n/ui';
+import { localizePath } from '../i18n/utils';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+---
+
+<BaseLayout
+  title={`${t('notfound.title')} — ${site.brand}`}
+  description={t('notfound.body')}
+  lang={lang}
+  enPath="/"
+  idPath="/id/"
+  noindex
+>
+  <section class="notfound container">
+    <p class="eyebrow">{site.brand}</p>
+    <p class="notfound__code" aria-hidden="true">404</p>
+    <h1>{t('notfound.title')}</h1>
+    <p class="notfound__body">{t('notfound.body')}</p>
+    <a href={localizePath('/', lang)} class="btn btn--primary">
+      {t('notfound.cta')}
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.4"></path>
+      </svg>
+    </a>
+  </section>
+</BaseLayout>
+
+<style>
+  .notfound {
+    min-height: 62vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding-block: clamp(64px, 12vw, 160px);
+  }
+
+  .notfound__code {
+    margin-top: 24px;
+    font-family: var(--font-display);
+    font-size: var(--step-6);
+    font-weight: 500;
+    line-height: 0.85;
+    letter-spacing: -0.07em;
+    color: var(--accent);
+  }
+
+  .notfound h1 {
+    margin-top: 24px;
+    font-size: var(--step-3);
+    font-weight: 500;
+    letter-spacing: -0.04em;
+  }
+
+  .notfound__body {
+    margin-top: 12px;
+    margin-bottom: 32px;
+    max-width: 46ch;
+    color: var(--text-secondary);
+  }
+
+  .notfound .btn {
+    align-self: flex-start;
+  }
+</style>

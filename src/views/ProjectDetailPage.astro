@@ -1,0 +1,368 @@
+---
+import { render, type CollectionEntry } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { site } from '../data/site';
+import { useTranslations, type Lang, type UIKey } from '../i18n/ui';
+import { localizePath, formatDate, formatYear } from '../i18n/utils';
+
+interface Props {
+  lang: Lang;
+  project: CollectionEntry<'projects'>;
+  enPath: string;
+  idPath: string;
+}
+
+const { lang, project, enPath, idPath } = Astro.props;
+const t = useTranslations(lang);
+const { Content } = await render(project);
+
+const statusLabel = (status: 'in-progress' | 'completed' | 'planned') =>
+  t(`projects.status.${status}` as UIKey);
+const statusClass = (status: 'in-progress' | 'completed' | 'planned') =>
+  status === 'in-progress' ? 'status--progress' : status === 'planned' ? 'status--planned' : 'status--complete';
+
+const projectUrl = new URL(localizePath(`/projects/${project.data.routeSlug ?? project.slug}/`, lang), site.url).toString();
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'CreativeWork',
+  name: project.data.title,
+  description: project.data.description,
+  url: projectUrl,
+  dateCreated: project.data.pubDate.toISOString().slice(0, 10),
+  keywords: project.data.tags.join(', '),
+  author: {
+    '@type': 'Person',
+    name: site.name,
+    url: site.url,
+  },
+  ...(project.data.liveUrl ? { sameAs: [project.data.liveUrl, project.data.githubUrl].filter(Boolean) } : {}),
+};
+---
+
+<BaseLayout
+  title={`${project.data.title} — ${site.name}`}
+  description={project.data.description}
+  lang={lang}
+  enPath={enPath}
+  idPath={idPath}
+  type="article"
+  publishedTime={project.data.pubDate}
+  tags={project.data.tags}
+  image={project.data.image}
+  jsonLd={jsonLd}
+>
+  <header class="project-head container">
+    <div class="project-head__top">
+      <a href={localizePath('/projects/', lang)} class="back-link link-underline">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M19 12H5M11 6l-6 6 6 6" fill="none" stroke="currentColor" stroke-width="1.4"></path>
+        </svg>
+        {t('projects.back')}
+      </a>
+      <span class="meta">{formatYear(project.data.pubDate)}</span>
+    </div>
+
+    <p class="eyebrow">{t('projects.eyebrow')}</p>
+    <h1>{project.data.title}</h1>
+    <p class="project-lede">{project.data.description}</p>
+
+    <dl class="project-facts">
+      <div>
+        <dt>{t('projects.year')}</dt>
+        <dd>{formatDate(project.data.pubDate, lang)}</dd>
+      </div>
+      <div>
+        <dt>{t('about.metaStatus')}</dt>
+        <dd class:list={['status', statusClass(project.data.status)]}>
+          {statusLabel(project.data.status)}
+        </dd>
+      </div>
+      <div>
+        <dt>{t('projects.role')}</dt>
+        <dd>{t('projects.roleValue')}</dd>
+      </div>
+      <div>
+        <dt>{t('projects.tech')}</dt>
+        <dd>{project.data.tags.join(' · ')}</dd>
+      </div>
+    </dl>
+  </header>
+
+  <section class="project-body container">
+    <aside class="project-aside reveal">
+      <div class="aside-block">
+        <p class="eyebrow">{t('projects.links')}</p>
+        <div class="aside-links">
+          {project.data.liveUrl && (
+            <a href={project.data.liveUrl} target="_blank" rel="noopener noreferrer" class="aside-link">
+              <span>{t('projects.live')}</span>
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M6 18L18 6M9 6h9v9" fill="none" stroke="currentColor" stroke-width="1.3"></path>
+              </svg>
+            </a>
+          )}
+          {project.data.githubUrl && (
+            <a href={project.data.githubUrl} target="_blank" rel="noopener noreferrer" class="aside-link">
+              <span>{t('projects.repo')}</span>
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M6 18L18 6M9 6h9v9" fill="none" stroke="currentColor" stroke-width="1.3"></path>
+              </svg>
+            </a>
+          )}
+        </div>
+      </div>
+
+      <div class="aside-block">
+        <p class="eyebrow">{t('projects.tech')}</p>
+        <ul class="tag-list">
+          {project.data.tags.map((tag) => <li class="tag">{tag}</li>)}
+        </ul>
+      </div>
+    </aside>
+
+    <div class="project-main">
+      {project.data.problem && (
+        <section class="project-note reveal">
+          <h2>{t('projects.problem')}</h2>
+          <p>{project.data.problem}</p>
+        </section>
+      )}
+      {project.data.contribution && (
+        <section class="project-note reveal">
+          <h2>{t('projects.contribution')}</h2>
+          <p>{project.data.contribution}</p>
+        </section>
+      )}
+      {project.data.challenges && (
+        <section class="project-note reveal">
+          <h2>{t('projects.challenges')}</h2>
+          <p>{project.data.challenges}</p>
+        </section>
+      )}
+
+      {project.data.image && (
+        <figure class="project-figure reveal">
+          <img src={project.data.image} alt={project.data.title} width="1200" height="750" loading="lazy" />
+        </figure>
+      )}
+
+      <article class="prose project-prose reveal">
+        <Content />
+      </article>
+
+      <div class="project-foot">
+        <a href={localizePath('/projects/', lang)} class="btn btn--outline">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M19 12H5M11 6l-6 6 6 6" fill="none" stroke="currentColor" stroke-width="1.4"></path>
+          </svg>
+          {t('projects.back')}
+        </a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .project-head {
+    padding-top: clamp(36px, 5vw, 64px);
+    padding-bottom: clamp(36px, 5vw, 64px);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .project-head__top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    margin-bottom: clamp(32px, 5vw, 56px);
+  }
+
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+  }
+
+  .back-link svg {
+    width: 15px;
+    height: 15px;
+  }
+
+  .project-head h1 {
+    margin-top: 20px;
+    font-size: var(--step-5);
+    font-weight: 500;
+    line-height: 0.95;
+    letter-spacing: -0.055em;
+    max-width: 16ch;
+  }
+
+  .project-lede {
+    margin-top: 24px;
+    max-width: 58ch;
+    color: var(--text-secondary);
+    font-size: var(--step-1);
+    line-height: 1.55;
+  }
+
+  .project-facts {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0;
+    margin-top: clamp(32px, 5vw, 56px);
+    border-top: 1px solid var(--border);
+  }
+
+  .project-facts div {
+    padding: 16px 0 0;
+    padding-right: 16px;
+  }
+
+  .project-facts dt {
+    font-family: var(--font-mono);
+    font-size: 0.62rem;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    margin-bottom: 6px;
+  }
+
+  .project-facts dd {
+    font-size: 0.9rem;
+    line-height: 1.45;
+  }
+
+  .project-body {
+    display: grid;
+    grid-template-columns: minmax(190px, 0.36fr) minmax(0, 1fr);
+    gap: clamp(32px, 7vw, 112px);
+    padding-block: clamp(48px, 7vw, 96px);
+    align-items: start;
+  }
+
+  .project-aside {
+    position: sticky;
+    top: calc(var(--nav-height) + 32px);
+    display: grid;
+    gap: 32px;
+  }
+
+  .aside-block {
+    border-top: 1px solid var(--border);
+    padding-top: 16px;
+  }
+
+  .aside-links {
+    display: grid;
+    margin-top: 12px;
+    border-top: 1px solid var(--border);
+  }
+
+  .aside-link {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 11px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.88rem;
+  }
+
+  .aside-link svg {
+    width: 14px;
+    height: 14px;
+    color: var(--accent);
+  }
+
+  .aside-link:hover {
+    color: var(--accent);
+  }
+
+  .aside-block .tag-list {
+    margin-top: 12px;
+  }
+
+  .project-main {
+    min-width: 0;
+  }
+
+  .project-note {
+    max-width: var(--measure);
+    margin-bottom: 32px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .project-note h2 {
+    font-size: var(--step-1);
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    margin-bottom: 8px;
+  }
+
+  .project-note p {
+    color: var(--text-secondary);
+  }
+
+  .project-figure {
+    margin-bottom: 32px;
+  }
+
+  .project-figure img {
+    border: 1px solid var(--border);
+  }
+
+  .project-prose {
+    max-width: 66ch;
+  }
+
+  .project-foot {
+    margin-top: clamp(32px, 5vw, 56px);
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+  }
+
+  @media (max-width: 900px) {
+    .project-facts {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      row-gap: 20px;
+    }
+
+    .project-body {
+      grid-template-columns: 1fr;
+    }
+
+    .project-aside {
+      position: static;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 24px;
+      order: 2;
+    }
+
+    .project-main {
+      order: 1;
+    }
+  }
+
+  @media (max-width: 600px) {
+    .project-aside {
+      grid-template-columns: 1fr;
+    }
+
+    .project-facts {
+      grid-template-columns: 1fr;
+      row-gap: 0;
+    }
+
+    .project-facts div {
+      padding-block: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+  }
+</style>

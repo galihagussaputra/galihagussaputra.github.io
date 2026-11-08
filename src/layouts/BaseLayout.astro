@@ -2,69 +2,104 @@
 import '../styles/global.css';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
-import MobileNav from '../components/MobileNav.astro';
+import Seo from '../components/Seo.astro';
 import ThemeScript from '../components/ThemeScript.astro';
+import type { Lang } from '../i18n/ui';
+import { getAlternatePaths } from '../i18n/utils';
 
 interface Props {
-  title?: string;
-  description?: string;
+  title: string;
+  description: string;
+  lang: Lang;
+  enPath?: string;
+  idPath?: string;
+  type?: 'website' | 'article' | 'profile';
+  publishedTime?: Date | string;
+  modifiedTime?: Date | string;
+  tags?: string[];
+  image?: string;
+  noindex?: boolean;
+  jsonLd?: Record<string, unknown> | Record<string, unknown>[];
 }
 
 const {
-  title = 'Galih - Software Developer',
-  description = 'Portfolio Galih Agus Saputra, Software Developer.',
+  title,
+  description,
+  lang,
+  type,
+  publishedTime,
+  modifiedTime,
+  tags,
+  image,
+  noindex,
+  jsonLd,
 } = Astro.props;
 
-const site = Astro.site ?? new URL('https://galihagussaputra.github.io');
-const canonicalURL = new URL(Astro.url.pathname, site);
+const fallbackPaths = getAlternatePaths(Astro.url.pathname);
+const enPath = Astro.props.enPath ?? fallbackPaths.en;
+const idPath = Astro.props.idPath ?? fallbackPaths.id;
 ---
 
 <!doctype html>
-<html lang="id" data-theme="light">
+<html lang={lang}>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>{title}</title>
-    <meta name="description" content={description} />
-    <meta name="generator" content={Astro.generator} />
-    <link rel="canonical" href={canonicalURL} />
+    <ThemeScript />
+    <Seo
+      title={title}
+      description={description}
+      lang={lang}
+      enPath={enPath}
+      idPath={idPath}
+      type={type}
+      publishedTime={publishedTime}
+      modifiedTime={modifiedTime}
+      tags={tags}
+      image={image}
+      noindex={noindex}
+      jsonLd={jsonLd}
+    />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
       rel="stylesheet"
     />
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+      referrerpolicy="no-referrer"
     />
-    <meta name="theme-color" content="#09090b" />
-    <meta property="og:title" content={title} />
-    <meta property="og:description" content={description} />
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content={canonicalURL} />
-    <meta name="twitter:card" content="summary_large_image" />
-    <ThemeScript />
   </head>
   <body>
-    <Header />
-    <main>
+    <Header lang={lang} enPath={enPath} idPath={idPath} />
+    <main id="main">
       <slot />
     </main>
-    <Footer />
-    <MobileNav />
+    <Footer lang={lang} enPath={enPath} idPath={idPath} />
 
     <script>
-      const fadeObserver = new IntersectionObserver(
-        (entries) => {
-          entries.forEach((entry) => {
-            if (entry.isIntersecting) entry.target.classList.add('visible');
-          });
-        },
-        { threshold: 0.1, rootMargin: '0px 0px -40px 0px' }
-      );
-      document.querySelectorAll('.fade-in').forEach((el) => fadeObserver.observe(el));
+      const reveals = document.querySelectorAll<HTMLElement>('.reveal');
+
+      if ('IntersectionObserver' in window) {
+        const observer = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) {
+                entry.target.classList.add('is-visible');
+                observer.unobserve(entry.target);
+              }
+            });
+          },
+          { threshold: 0.12, rootMargin: '0px 0px -48px 0px' }
+        );
+
+        reveals.forEach((element) => observer.observe(element));
+      } else {
+        reveals.forEach((element) => element.classList.add('is-visible'));
+      }
     </script>
   </body>
 </html>

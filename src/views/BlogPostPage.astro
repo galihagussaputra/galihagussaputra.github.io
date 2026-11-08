@@ -1,0 +1,317 @@
+---
+import { render, type CollectionEntry } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { site } from '../data/site';
+import { useTranslations, type Lang } from '../i18n/ui';
+import { localizePath, formatDate } from '../i18n/utils';
+import { getPosts, entrySlug, readingTime } from '../i18n/content';
+
+interface Props {
+  lang: Lang;
+  post: CollectionEntry<'posts'>;
+  enPath: string;
+  idPath: string;
+}
+
+const { lang, post, enPath, idPath } = Astro.props;
+const t = useTranslations(lang);
+const { Content, headings } = await render(post);
+
+const minutes = readingTime(post.body, lang);
+const toc = headings.filter((heading) => heading.depth === 2 || heading.depth === 3);
+
+const allPosts = await getPosts(lang);
+const candidates = allPosts
+  .filter((entry) => entry.data.translationKey !== post.data.translationKey)
+  .map((entry) => ({
+    entry,
+    score: entry.data.tags.filter((tag) => post.data.tags.includes(tag)).length,
+  }))
+  .sort((a, b) => b.score - a.score || b.entry.data.pubDate.valueOf() - a.entry.data.pubDate.valueOf());
+
+const related = candidates.slice(0, 2).map((item) => item.entry);
+
+const postUrl = new URL(localizePath(`/blog/${entrySlug(post)}/`, lang), site.url).toString();
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BlogPosting',
+  headline: post.data.title,
+  description: post.data.description,
+  datePublished: post.data.pubDate.toISOString(),
+  ...(post.data.updatedDate ? { dateModified: post.data.updatedDate.toISOString() } : {}),
+  url: postUrl,
+  inLanguage: lang,
+  keywords: post.data.tags.join(', '),
+  author: {
+    '@type': 'Person',
+    name: site.name,
+    url: site.url,
+  },
+  publisher: {
+    '@type': 'Person',
+    name: site.name,
+  },
+};
+---
+
+<BaseLayout
+  title={`${post.data.title} — ${site.name}`}
+  description={post.data.description}
+  lang={lang}
+  enPath={enPath}
+  idPath={idPath}
+  type="article"
+  publishedTime={post.data.pubDate}
+  modifiedTime={post.data.updatedDate}
+  tags={post.data.tags}
+  image={post.data.image}
+  jsonLd={jsonLd}
+>
+  <header class="post-head container">
+    <div class="post-head__top">
+      <a href={localizePath('/blog/', lang)} class="back-link link-underline">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M19 12H5M11 6l-6 6 6 6" fill="none" stroke="currentColor" stroke-width="1.4"></path>
+        </svg>
+        {t('blog.back')}
+      </a>
+      <span class="meta">{minutes} {t('blog.readingTime')}</span>
+    </div>
+
+    <p class="eyebrow">{t('blog.eyebrow')}</p>
+    <h1>{post.data.title}</h1>
+    <p class="post-lede">{post.data.description}</p>
+
+    <div class="post-meta">
+      <time datetime={post.data.pubDate.toISOString()}>
+        {t('blog.published')} {formatDate(post.data.pubDate, lang)}
+      </time>
+      {post.data.updatedDate && (
+        <span>{t('blog.updated')} {formatDate(post.data.updatedDate, lang)}</span>
+      )}
+      <ul class="tag-list">
+        {post.data.tags.map((tag) => <li class="tag">{tag}</li>)}
+      </ul>
+    </div>
+  </header>
+
+  <section class="post-body container">
+    <aside class="post-aside">
+      {toc.length > 1 && (
+        <nav class="toc" aria-label={t('blog.toc')}>
+          <p class="eyebrow">{t('blog.toc')}</p>
+          <ol>
+            {toc.map((heading) => (
+              <li class:list={[{ 'toc--nested': heading.depth === 3 }]}>
+                <a href={`#${heading.slug}`} class="link-underline">{heading.text}</a>
+              </li>
+            ))}
+          </ol>
+        </nav>
+      )}
+    </aside>
+
+    <article class="prose post-prose reveal">
+      <Content />
+    </article>
+  </section>
+
+  {related.length > 0 && (
+    <section class="related container">
+      <p class="eyebrow">{t('blog.related')}</p>
+      <div class="related-list">
+        {related.map((entry) => (
+          <a class="related-item" href={localizePath(`/blog/${entrySlug(entry)}/`, lang)}>
+            <time class="meta" datetime={entry.data.pubDate.toISOString()}>
+              {formatDate(entry.data.pubDate, lang)}
+            </time>
+            <h2>{entry.data.title}</h2>
+            <span class="related-arrow" aria-hidden="true">
+              <svg viewBox="0 0 24 24">
+                <path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.4"></path>
+              </svg>
+            </span>
+          </a>
+        ))}
+      </div>
+    </section>
+  )}
+</BaseLayout>
+
+<style>
+  .post-head {
+    padding-top: clamp(36px, 5vw, 64px);
+    padding-bottom: clamp(32px, 5vw, 56px);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .post-head__top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    margin-bottom: clamp(32px, 5vw, 56px);
+  }
+
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+  }
+
+  .back-link svg {
+    width: 15px;
+    height: 15px;
+  }
+
+  .post-head h1 {
+    margin-top: 20px;
+    max-width: 20ch;
+    font-size: var(--step-5);
+    font-weight: 500;
+    line-height: 0.98;
+    letter-spacing: -0.055em;
+  }
+
+  .post-lede {
+    margin-top: 24px;
+    max-width: 58ch;
+    color: var(--text-secondary);
+    font-size: var(--step-1);
+    line-height: 1.55;
+  }
+
+  .post-meta {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-top: clamp(24px, 4vw, 40px);
+    flex-wrap: wrap;
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+  }
+
+  .post-body {
+    display: grid;
+    grid-template-columns: minmax(160px, 0.32fr) minmax(0, 1fr);
+    gap: clamp(32px, 7vw, 112px);
+    padding-block: clamp(40px, 7vw, 88px);
+    align-items: start;
+  }
+
+  .post-aside {
+    position: sticky;
+    top: calc(var(--nav-height) + 32px);
+  }
+
+  .toc {
+    border-top: 1px solid var(--border);
+    padding-top: 16px;
+  }
+
+  .toc ol {
+    display: grid;
+    gap: 8px;
+    margin-top: 14px;
+    font-size: 0.84rem;
+    color: var(--text-secondary);
+  }
+
+  .toc li.toc--nested {
+    padding-left: 14px;
+    font-size: 0.8rem;
+  }
+
+  .toc a:hover {
+    color: var(--accent);
+  }
+
+  .post-prose {
+    max-width: 68ch;
+  }
+
+  .related {
+    padding-block: clamp(40px, 6vw, 72px);
+    border-top: 1px solid var(--border);
+  }
+
+  .related-list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0 clamp(24px, 4vw, 48px);
+    margin-top: 24px;
+    border-top: 1px solid var(--border);
+  }
+
+  .related-item {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 28px;
+    gap: 12px;
+    align-items: start;
+    padding: clamp(20px, 3vw, 28px) 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .related-item time {
+    grid-column: 1 / -1;
+  }
+
+  .related-item h2 {
+    font-size: clamp(1.15rem, 2vw, 1.5rem);
+    font-weight: 500;
+    letter-spacing: -0.03em;
+  }
+
+  .related-arrow {
+    color: var(--text-secondary);
+    transition: color var(--transition), transform var(--transition);
+  }
+
+  .related-arrow svg {
+    width: 17px;
+    height: 17px;
+    margin-top: 4px;
+  }
+
+  .related-item:hover .related-arrow {
+    color: var(--accent);
+    transform: translateX(3px);
+  }
+
+  @media (max-width: 900px) {
+    .post-body {
+      grid-template-columns: 1fr;
+    }
+
+    .post-aside {
+      position: static;
+      order: 2;
+    }
+
+    .post-prose {
+      order: 1;
+    }
+
+    .related-list {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 560px) {
+    .post-head h1 {
+      font-size: clamp(2.1rem, 10vw, 3rem);
+    }
+
+    .post-meta {
+      gap: 12px;
+    }
+  }
+</style>

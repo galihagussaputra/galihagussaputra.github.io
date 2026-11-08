@@ -1,35 +1,5 @@
 ---
-import BaseLayout from '../layouts/BaseLayout.astro';
+import ProjectsPage from '../views/ProjectsPage.astro';
 ---
 
-<BaseLayout
-  title="Projects - Under Development"
-  description="Halaman project sedang dalam pengembangan."
->
-  <section class="section">
-    <div class="container">
-      <div class="under-dev" style="text-align: center; padding: 48px 0;">
-        <div class="under-dev-icon" style="font-size: 5rem; color: var(--accent); margin-bottom: 24px;">
-          <i class="fa-solid fa-helmet-safety" aria-hidden="true"></i>
-        </div>
-        <p class="section-eyebrow" style="margin-bottom: 8px;">Projects</p>
-        <h1 class="section-title" style="margin-bottom: 16px;">Halaman Under Development</h1>
-        <p style="color: var(--text-muted); font-size: 1.1rem; max-width: 480px; margin: 0 auto 0;">
-          Halaman ini masih dalam proses pengembangan. Kumpulan proyek yang sedang saya kerjakan
-          akan ditampilkan di sini setelah selesai.
-        </p>
-        <div class="under-dev-stripes" aria-hidden="true"></div>
-        <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-top: 32px;">
-          <a href="/" class="btn btn-primary">
-            <i class="fa-solid fa-house" aria-hidden="true"></i>
-            Kembali ke Beranda
-          </a>
-          <a href="/contact/" class="btn btn-outline">
-            <i class="fa-solid fa-envelope" aria-hidden="true"></i>
-            Hubungi Saya
-          </a>
-        </div>
-      </div>
-    </div>
-  </section>
-</BaseLayout>
+<ProjectsPage lang="en" />

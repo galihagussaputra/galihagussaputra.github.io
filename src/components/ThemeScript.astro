@@ -1,8 +1,18 @@
-<script>
-  const theme = localStorage.getItem('theme');
-  if (theme) {
-    document.documentElement.setAttribute('data-theme', theme);
-  } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-    document.documentElement.setAttribute('data-theme', 'dark');
-  }
+<script is:inline>
+  (() => {
+    const root = document.documentElement;
+    root.classList.add('has-js');
+    try {
+      const stored = localStorage.getItem('theme');
+      const preferred =
+        stored === 'light' || stored === 'dark'
+          ? stored
+          : window.matchMedia('(prefers-color-scheme: dark)').matches
+            ? 'dark'
+            : 'light';
+      root.setAttribute('data-theme', preferred);
+    } catch {
+      root.setAttribute('data-theme', 'light');
+    }
+  })();
 </script>

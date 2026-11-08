@@ -1,0 +1,23 @@
+---
+import BlogPostPage from '../../../views/BlogPostPage.astro';
+import type { Lang } from '../../../i18n/ui';
+import { getPosts, getTranslation, entrySlug, entryKey } from '../../../i18n/content';
+
+export async function getStaticPaths() {
+  const lang: Lang = 'id';
+  const posts = await getPosts(lang);
+
+  return posts.map((post) => ({
+    params: { slug: entrySlug(post) },
+    props: { post },
+  }));
+}
+
+const { post } = Astro.props;
+
+const enEntry = await getTranslation('posts', entryKey(post), 'en');
+const enPath = enEntry ? `/blog/${entrySlug(enEntry)}/` : '/blog/';
+const idPath = `/id/blog/${entrySlug(post)}/`;
+---
+
+<BlogPostPage lang="id" post={post} enPath={enPath} idPath={idPath} />

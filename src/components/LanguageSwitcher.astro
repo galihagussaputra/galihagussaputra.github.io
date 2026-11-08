@@ -1,0 +1,68 @@
+---
+import { useTranslations, type Lang } from '../i18n/ui';
+
+interface Props {
+  lang: Lang;
+  enPath: string;
+  idPath: string;
+  compact?: boolean;
+}
+
+const { lang, enPath, idPath, compact = false } = Astro.props;
+const t = useTranslations(lang);
+---
+
+<nav class:list={['lang-switch', { 'lang-switch--compact': compact }]} aria-label={t('common.language')}>
+  <a
+    href={enPath}
+    hreflang="en"
+    lang="en"
+    class:list={['lang-switch__item', { 'is-active': lang === 'en' }]}
+    aria-current={lang === 'en' ? 'page' : undefined}
+  >
+    EN
+  </a>
+  <span class="lang-switch__divider" aria-hidden="true">/</span>
+  <a
+    href={idPath}
+    hreflang="id"
+    lang="id"
+    class:list={['lang-switch__item', { 'is-active': lang === 'id' }]}
+    aria-current={lang === 'id' ? 'page' : undefined}
+  >
+    ID
+  </a>
+</nav>
+
+<style>
+  .lang-switch {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+  }
+
+  .lang-switch__item {
+    padding: 4px 2px;
+    color: var(--text-secondary);
+    transition: color var(--transition);
+  }
+
+  .lang-switch__item:hover {
+    color: var(--text);
+  }
+
+  .lang-switch__item.is-active {
+    color: var(--accent);
+  }
+
+  .lang-switch__divider {
+    color: var(--border);
+  }
+
+  .lang-switch--compact {
+    font-size: 0.68rem;
+  }
+</style>

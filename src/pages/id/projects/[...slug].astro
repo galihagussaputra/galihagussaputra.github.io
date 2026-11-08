@@ -1,0 +1,23 @@
+---
+import ProjectDetailPage from '../../../views/ProjectDetailPage.astro';
+import type { Lang } from '../../../i18n/ui';
+import { getLocalizedCollection, getTranslation, entrySlug, entryKey } from '../../../i18n/content';
+
+export async function getStaticPaths() {
+  const lang: Lang = 'id';
+  const projects = await getLocalizedCollection('projects', lang);
+
+  return projects.map((project) => ({
+    params: { slug: entrySlug(project) },
+    props: { project },
+  }));
+}
+
+const { project } = Astro.props;
+
+const enEntry = await getTranslation('projects', entryKey(project), 'en');
+const enPath = enEntry ? `/projects/${entrySlug(enEntry)}/` : '/projects/';
+const idPath = `/id/projects/${entrySlug(project)}/`;
+---
+
+<ProjectDetailPage lang="id" project={project} enPath={enPath} idPath={idPath} />

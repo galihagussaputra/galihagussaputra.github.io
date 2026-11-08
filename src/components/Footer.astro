@@ -1,21 +1,194 @@
 ---
-const socials = [
-  { href: 'https://github.com/galihagussaputra', icon: 'fa-brands fa-github', label: 'GitHub' },
-  { href: 'https://id.linkedin.com/in/galihagussaputra', icon: 'fa-brands fa-linkedin-in', label: 'LinkedIn' },
-  // { href: 'https://twitter.com/', icon: 'fa-brands fa-x-twitter', label: 'Twitter' },
-];
+import { site } from '../data/site';
+import { useTranslations, type Lang, type UIKey } from '../i18n/ui';
+import { localizePath } from '../i18n/utils';
+import LanguageSwitcher from './LanguageSwitcher.astro';
+
+interface Props {
+  lang: Lang;
+  enPath: string;
+  idPath: string;
+}
+
+const { lang, enPath, idPath } = Astro.props;
+const t = useTranslations(lang);
 const year = new Date().getFullYear();
+
+const navItems: { key: UIKey; path: string }[] = [
+  { key: 'nav.home', path: '/' },
+  { key: 'nav.about', path: '/about/' },
+  { key: 'nav.projects', path: '/projects/' },
+  { key: 'nav.blog', path: '/blog/' },
+  { key: 'nav.contact', path: '/contact/' },
+];
 ---
 
 <footer class="site-footer">
-  <div class="container footer-content">
-    <p>&copy; {year} Galih Agus Saputra. Dibangun dengan Astro & MDX.</p>
-    <div class="footer-social">
-      {socials.map((s) => (
-        <a href={s.href} target="_blank" rel="noopener noreferrer" aria-label={s.label}>
-          <i class={s.icon} aria-hidden="true"></i>
+  <div class="container">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <a href={localizePath('/', lang)} class="footer-wordmark">
+          Galih<span>.</span>dev
         </a>
-      ))}
+        <p>{t('footer.built')}</p>
+      </div>
+
+      <div class="footer-column">
+        <p class="footer-heading">{t('footer.navigate')}</p>
+        <ul>
+          {navItems.map((item) => (
+            <li><a href={localizePath(item.path, lang)} class="link-underline">{t(item.key)}</a></li>
+          ))}
+        </ul>
+      </div>
+
+      <div class="footer-column">
+        <p class="footer-heading">{t('footer.elsewhere')}</p>
+        <ul>
+          {site.socials.map((social) => (
+            <li>
+              <a href={social.href} target="_blank" rel="noopener noreferrer" class="link-underline">
+                {social.label}
+              </a>
+            </li>
+          ))}
+          <li><a href={`mailto:${site.email}`} class="link-underline">Email</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-column">
+        <p class="footer-heading">{t('footer.colophon')}</p>
+        <p class="footer-meta">{t('footer.type')}</p>
+        <p class="footer-meta">{t('footer.stack')}</p>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p>&copy; {year} {site.name}. {t('footer.rights')}</p>
+      <div class="footer-bottom__right">
+        <LanguageSwitcher lang={lang} enPath={enPath} idPath={idPath} />
+        <span class="footer-coords">{site.location} · {t('home.eyebrow')}</span>
+      </div>
     </div>
   </div>
 </footer>
+
+<style>
+  .site-footer {
+    border-top: 1px solid var(--border);
+    padding-top: clamp(48px, 7vw, 88px);
+    padding-bottom: 32px;
+    margin-top: clamp(56px, 8vw, 112px);
+  }
+
+  .footer-top {
+    display: grid;
+    grid-template-columns: minmax(0, 1.7fr) repeat(3, minmax(0, 1fr));
+    gap: clamp(28px, 5vw, 64px);
+    padding-bottom: clamp(40px, 6vw, 72px);
+  }
+
+  .footer-wordmark {
+    display: inline-block;
+    font-family: var(--font-display);
+    font-size: clamp(2rem, 4vw, 3.2rem);
+    font-weight: 500;
+    letter-spacing: -0.05em;
+    line-height: 1;
+  }
+
+  .footer-wordmark span {
+    color: var(--accent);
+  }
+
+  .footer-brand p {
+    max-width: 30ch;
+    margin-top: 16px;
+    color: var(--text-secondary);
+    font-size: 0.92rem;
+  }
+
+  .footer-heading {
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    margin-bottom: 18px;
+  }
+
+  .footer-column ul {
+    display: grid;
+    gap: 10px;
+    font-size: 0.94rem;
+  }
+
+  .footer-column a {
+    color: var(--text);
+  }
+
+  .footer-meta {
+    color: var(--text-secondary);
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    line-height: 1.8;
+    letter-spacing: 0.03em;
+  }
+
+  .footer-meta + .footer-meta {
+    margin-top: 8px;
+  }
+
+  .footer-bottom {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+    flex-wrap: wrap;
+  }
+
+  .footer-bottom > p,
+  .footer-coords {
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.05em;
+    color: var(--text-secondary);
+  }
+
+  .footer-bottom__right {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+  }
+
+  @media (max-width: 900px) {
+    .footer-top {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .footer-brand {
+      grid-column: 1 / -1;
+    }
+  }
+
+  @media (max-width: 560px) {
+    .footer-top {
+      grid-template-columns: 1fr;
+    }
+
+    .footer-brand {
+      grid-column: auto;
+    }
+
+    .footer-bottom__right {
+      width: 100%;
+      justify-content: space-between;
+    }
+
+    .footer-coords {
+      display: none;
+    }
+  }
+</style>

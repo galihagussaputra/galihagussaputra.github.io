@@ -1,0 +1,328 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { site } from '../data/site';
+import { useTranslations, type Lang, type UIKey } from '../i18n/ui';
+import { localizePath, formatYear } from '../i18n/utils';
+import { getProjects, entrySlug } from '../i18n/content';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+const projects = await getProjects(lang);
+
+const lead = projects[0];
+const rest = projects.slice(1);
+
+const statusLabel = (status: 'in-progress' | 'completed' | 'planned') =>
+  t(`projects.status.${status}` as UIKey);
+const statusClass = (status: 'in-progress' | 'completed' | 'planned') =>
+  status === 'in-progress' ? 'status--progress' : status === 'planned' ? 'status--planned' : 'status--complete';
+
+const title = lang === 'id' ? `Proyek — ${site.name}` : `Projects — ${site.name}`;
+const description =
+  lang === 'id'
+    ? 'Karya pilihan di aplikasi web, sistem backend, dan alat data.'
+    : 'Selected work across web applications, backend systems, and data tools.';
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'CollectionPage',
+  name: title,
+  description,
+  url: new URL(localizePath('/projects/', lang), site.url).toString(),
+  inLanguage: lang,
+};
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  lang={lang}
+  enPath="/projects/"
+  idPath="/id/projects/"
+  jsonLd={jsonLd}
+>
+  <header class="page-head container">
+    <div class="page-head__top">
+      <p class="eyebrow">{t('projects.eyebrow')}</p>
+      <span class="meta">{String(projects.length).padStart(2, '0')} {t('projects.count')}</span>
+    </div>
+    <h1 class="page-title">{t('projects.title')}</h1>
+    <p class="page-lede">{t('projects.intro')}</p>
+  </header>
+
+  <section class="projects-section">
+    <div class="container">
+      {projects.length === 0 ? (
+        <p class="muted">{t('projects.empty')}</p>
+      ) : (
+        <>
+          {lead && (
+            <a
+              class="lead-project reveal"
+              href={localizePath(`/projects/${entrySlug(lead)}/`, lang)}
+            >
+              <div class="lead-project__meta">
+                <span class="mono">{t('projects.featured')}</span>
+                <span class="mono">{formatYear(lead.data.pubDate)}</span>
+              </div>
+
+              <div class="lead-project__body">
+                <h2>{lead.data.title}</h2>
+                <p>{lead.data.description}</p>
+                <div class="lead-project__foot">
+                  <ul class="tag-list">
+                    {lead.data.tags.map((tag) => <li class="tag">{tag}</li>)}
+                  </ul>
+                  <span class:list={['status', statusClass(lead.data.status)]}>
+                    {statusLabel(lead.data.status)}
+                  </span>
+                </div>
+              </div>
+
+              <span class="lead-project__arrow" aria-hidden="true">
+                <svg viewBox="0 0 24 24">
+                  <path d="M6 18L18 6M9 6h9v9" fill="none" stroke="currentColor" stroke-width="1.3"></path>
+                </svg>
+              </span>
+            </a>
+          )}
+
+          <div class="project-list">
+            {rest.map((project, index) => (
+              <a
+                class="project-row reveal"
+                href={localizePath(`/projects/${entrySlug(project)}/`, lang)}
+              >
+                <span class="project-row__index">{String(index + 2).padStart(2, '0')}</span>
+                <div class="project-row__main">
+                  <div class="project-row__heading">
+                    <h2>{project.data.title}</h2>
+                    <span class="meta">{formatYear(project.data.pubDate)}</span>
+                  </div>
+                  <p>{project.data.description}</p>
+                  <div class="project-row__foot">
+                    <ul class="tag-list">
+                      {project.data.tags.map((tag) => <li class="tag">{tag}</li>)}
+                    </ul>
+                    <span class:list={['status', statusClass(project.data.status)]}>
+                      {statusLabel(project.data.status)}
+                    </span>
+                  </div>
+                </div>
+                <span class="project-row__arrow" aria-hidden="true">
+                  <svg viewBox="0 0 24 24">
+                    <path d="M6 18L18 6M9 6h9v9" fill="none" stroke="currentColor" stroke-width="1.3"></path>
+                  </svg>
+                </span>
+              </a>
+            ))}
+          </div>
+        </>
+      )}
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .page-head {
+    padding-top: clamp(48px, 7vw, 96px);
+    padding-bottom: clamp(36px, 5vw, 64px);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .page-head__top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+  }
+
+  .page-title {
+    margin-top: 24px;
+    font-size: var(--step-5);
+    font-weight: 500;
+    line-height: 0.95;
+    letter-spacing: -0.055em;
+    max-width: 20ch;
+  }
+
+  .page-lede {
+    margin-top: 24px;
+    max-width: 58ch;
+    color: var(--text-secondary);
+    font-size: var(--step-1);
+    line-height: 1.55;
+  }
+
+  .projects-section {
+    padding-block: clamp(40px, 6vw, 80px) clamp(24px, 4vw, 48px);
+  }
+
+  .lead-project {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 56px;
+    gap: clamp(20px, 4vw, 40px);
+    padding: clamp(28px, 5vw, 56px);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    transition: border-color var(--transition);
+  }
+
+  .lead-project:hover {
+    border-color: var(--accent);
+  }
+
+  .lead-project__meta {
+    grid-column: 1 / -1;
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    color: var(--accent);
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .lead-project__body h2 {
+    font-size: clamp(2.2rem, 5vw, 4.4rem);
+    font-weight: 500;
+    line-height: 0.95;
+    letter-spacing: -0.055em;
+  }
+
+  .lead-project__body p {
+    max-width: 56ch;
+    margin-top: 20px;
+    color: var(--text-secondary);
+    font-size: var(--step-1);
+    line-height: 1.55;
+  }
+
+  .lead-project__foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    margin-top: 28px;
+    flex-wrap: wrap;
+  }
+
+  .lead-project__arrow,
+  .project-row__arrow {
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-end;
+    color: var(--text-secondary);
+    transition: color var(--transition), transform var(--transition);
+  }
+
+  .lead-project__arrow svg {
+    width: 26px;
+    height: 26px;
+    margin-top: 6px;
+  }
+
+  .lead-project:hover .lead-project__arrow {
+    color: var(--accent);
+    transform: translate(4px, -4px);
+  }
+
+  .project-list {
+    margin-top: clamp(24px, 4vw, 48px);
+    border-top: 1px solid var(--border);
+  }
+
+  .project-row {
+    display: grid;
+    grid-template-columns: 56px minmax(0, 1fr) 32px;
+    gap: clamp(16px, 3vw, 32px);
+    padding: clamp(24px, 4vw, 40px) 0;
+    border-bottom: 1px solid var(--border);
+    transition: background-color var(--transition), padding-inline var(--transition);
+  }
+
+  .project-row:hover {
+    background: var(--surface);
+    padding-inline: clamp(8px, 1.5vw, 18px);
+  }
+
+  .project-row__index {
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.08em;
+    color: var(--text-secondary);
+    padding-top: 8px;
+  }
+
+  .project-row__heading {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 24px;
+  }
+
+  .project-row__heading h2 {
+    font-size: clamp(1.6rem, 3vw, 2.5rem);
+    font-weight: 500;
+    letter-spacing: -0.045em;
+  }
+
+  .project-row p {
+    max-width: 60ch;
+    margin-top: 12px;
+    color: var(--text-secondary);
+  }
+
+  .project-row__foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    margin-top: 18px;
+    flex-wrap: wrap;
+  }
+
+  .project-row__arrow svg {
+    width: 18px;
+    height: 18px;
+    margin-top: 6px;
+    transition: transform var(--transition), color var(--transition);
+  }
+
+  .project-row:hover .project-row__arrow svg {
+    color: var(--accent);
+    transform: translate(3px, -3px);
+  }
+
+  @media (max-width: 760px) {
+    .lead-project {
+      grid-template-columns: 1fr;
+    }
+
+    .lead-project__arrow {
+      display: none;
+    }
+
+    .project-row {
+      grid-template-columns: 34px minmax(0, 1fr);
+    }
+
+    .project-row__arrow {
+      display: none;
+    }
+
+    .project-row__heading {
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .project-row__foot {
+      align-items: flex-start;
+      flex-direction: column;
+      gap: 12px;
+    }
+  }
+</style>
