@@ -56,21 +56,11 @@ const isActive = (path: string) =>
     <div class="header-actions">
       <LanguageSwitcher lang={lang} enPath={enPath} idPath={idPath} />
       <ThemeToggle lang={lang} />
-      <button
-        class="menu-toggle"
-        id="menu-toggle"
-        type="button"
-        aria-controls="mobile-nav"
-        aria-expanded="false"
-        aria-label={t('common.openMenu')}
-      >
-        <span class="menu-toggle__lines" aria-hidden="true"><span></span><span></span></span>
-      </button>
     </div>
   </div>
 </header>
 
-<MobileNav lang={lang} enPath={enPath} idPath={idPath} />
+<MobileNav lang={lang} />
 
 <style>
   .site-header {
@@ -162,44 +152,13 @@ const isActive = (path: string) =>
     gap: 14px;
   }
 
-  .menu-toggle {
-    display: none;
-    align-items: center;
-    justify-content: center;
-    width: 38px;
-    height: 38px;
-    border: 1px solid var(--border);
-    border-radius: 50%;
-    color: var(--text);
-  }
-
-  .menu-toggle__lines {
-    display: grid;
-    gap: 5px;
-    width: 15px;
-  }
-
-  .menu-toggle__lines span {
-    display: block;
-    height: 1px;
-    background: currentColor;
-  }
-
   @media (max-width: 900px) {
     .desktop-nav {
       display: none;
     }
-
-    .menu-toggle {
-      display: inline-flex;
-    }
   }
 
   @media (max-width: 520px) {
-    .header-actions :global(.lang-switch) {
-      display: none;
-    }
-
     .header-inner {
       gap: 14px;
     }

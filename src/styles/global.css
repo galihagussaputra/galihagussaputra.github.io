@@ -26,6 +26,7 @@
   --measure: 68ch;
   --gutter: clamp(20px, 5vw, 64px);
   --nav-height: 72px;
+  --mobile-nav-height: 61px;
 
   --step--1: clamp(0.78rem, 0.75rem + 0.12vw, 0.84rem);
   --step-0: clamp(0.95rem, 0.92rem + 0.15vw, 1.02rem);
@@ -89,6 +90,12 @@ body {
   text-rendering: optimizeLegibility;
   transition: background-color 260ms var(--ease), color 260ms var(--ease);
   overflow-x: hidden;
+}
+
+@media (max-width: 900px) {
+  body {
+    padding-bottom: calc(var(--mobile-nav-height) + env(safe-area-inset-bottom) + 8px);
+  }
 }
 
 img,

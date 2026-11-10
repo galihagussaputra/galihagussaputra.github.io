@@ -1,25 +1,40 @@
 ---
-import { site } from '../data/site';
 import { useTranslations, type Lang, type UIKey } from '../i18n/ui';
 import { localizePath, stripLocale } from '../i18n/utils';
-import LanguageSwitcher from './LanguageSwitcher.astro';
-import ThemeToggle from './ThemeToggle.astro';
 
 interface Props {
   lang: Lang;
-  enPath: string;
-  idPath: string;
 }
 
-const { lang, enPath, idPath } = Astro.props;
+const { lang } = Astro.props;
 const t = useTranslations(lang);
 
-const items: { key: UIKey; path: string }[] = [
-  { key: 'nav.home', path: '/' },
-  { key: 'nav.about', path: '/about/' },
-  { key: 'nav.projects', path: '/projects/' },
-  { key: 'nav.blog', path: '/blog/' },
-  { key: 'nav.contact', path: '/contact/' },
+const items: { key: UIKey; path: string; icon: string }[] = [
+  {
+    key: 'nav.home',
+    path: '/',
+    icon: '<path d="M4 10.5 12 4l8 6.5V20a1 1 0 0 1-1 1h-4v-6H9v6H5a1 1 0 0 1-1-1z"/>',
+  },
+  {
+    key: 'nav.about',
+    path: '/about/',
+    icon: '<circle cx="12" cy="8" r="3.25"/><path d="M5.5 20a6.5 6.5 0 0 1 13 0"/>',
+  },
+  {
+    key: 'nav.projects',
+    path: '/projects/',
+    icon: '<rect x="4" y="4" width="6.5" height="6.5" rx="0.5"/><rect x="13.5" y="4" width="6.5" height="6.5" rx="0.5"/><rect x="4" y="13.5" width="6.5" height="6.5" rx="0.5"/><rect x="13.5" y="13.5" width="6.5" height="6.5" rx="0.5"/>',
+  },
+  {
+    key: 'nav.blog',
+    path: '/blog/',
+    icon: '<path d="M7 3h7l4 4v14H7z"/><path d="M14 3v4h4M10 12h6M10 16h6"/>',
+  },
+  {
+    key: 'nav.contact',
+    path: '/contact/',
+    icon: '<rect x="3.5" y="5.5" width="17" height="13" rx="1"/><path d="m4 6.5 8 6 8-6"/>',
+  },
 ];
 
 const current = stripLocale(Astro.url.pathname);
@@ -27,226 +42,140 @@ const isActive = (path: string) =>
   path === '/' ? current === '/' : current === path || current.startsWith(path);
 ---
 
-<div class="mobile-nav" id="mobile-nav" hidden aria-hidden="true">
-  <div class="mobile-nav__panel">
-    <div class="mobile-nav__top">
-      <span class="mobile-nav__label">{t('nav.home') === 'Home' ? 'Menu' : 'Menu'}</span>
-      <button
-        class="mobile-nav__close"
-        id="menu-close"
-        type="button"
-        aria-label={t('common.closeMenu')}
-      >
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M5 5l14 14M19 5L5 19" fill="none" stroke="currentColor" stroke-width="1.4"></path>
-        </svg>
-      </button>
-    </div>
-
-    <nav class="mobile-nav__links" aria-label={lang === 'id' ? 'Navigasi utama' : 'Main navigation'}>
-      {items.map((item, index) => (
+<nav
+  class="mobile-nav"
+  id="mobile-nav"
+  aria-label={lang === 'id' ? 'Navigasi utama' : 'Main navigation'}
+>
+  <ul>
+    {items.map((item) => (
+      <li>
         <a
           href={localizePath(item.path, lang)}
           class:list={['mobile-nav__link', { 'is-active': isActive(item.path) }]}
           aria-current={isActive(item.path) ? 'page' : undefined}
         >
-          <span class="mobile-nav__index">{String(index + 1).padStart(2, '0')}</span>
-          <span class="mobile-nav__text">{t(item.key)}</span>
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M6 18L18 6M9 6h9v9" fill="none" stroke="currentColor" stroke-width="1.3"></path>
-          </svg>
+          <span class="mobile-nav__icon" aria-hidden="true">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <Fragment set:html={item.icon} />
+            </svg>
+          </span>
+          <span class="mobile-nav__label">{t(item.key)}</span>
         </a>
-      ))}
-    </nav>
-
-    <div class="mobile-nav__foot">
-      <div class="mobile-nav__controls">
-        <LanguageSwitcher lang={lang} enPath={enPath} idPath={idPath} />
-        <ThemeToggle lang={lang} />
-      </div>
-      <div class="mobile-nav__socials">
-        {site.socials.map((social) => (
-          <a href={social.href} target="_blank" rel="noopener noreferrer">{social.label}</a>
-        ))}
-        <a href={`mailto:${site.email}`}>Email</a>
-      </div>
-    </div>
-  </div>
-</div>
+      </li>
+    ))}
+  </ul>
+</nav>
 
 <style>
   .mobile-nav {
-    position: fixed;
-    inset: 0;
-    z-index: 90;
-    background: var(--bg);
-    opacity: 0;
-    transition: opacity 220ms var(--ease);
-  }
-
-  .mobile-nav.is-open {
-    opacity: 1;
-  }
-
-  .mobile-nav[hidden] {
     display: none;
   }
 
-  .mobile-nav__panel {
-    display: flex;
-    flex-direction: column;
-    min-height: 100%;
-    padding: 20px var(--gutter) calc(28px + env(safe-area-inset-bottom));
+  @media (max-width: 900px) {
+    .mobile-nav {
+      position: fixed;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      z-index: 70;
+      display: block;
+      border-top: 1px solid var(--border);
+      background: color-mix(in srgb, var(--bg) 92%, transparent);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      padding: 6px max(10px, env(safe-area-inset-right))
+        calc(6px + env(safe-area-inset-bottom)) max(10px, env(safe-area-inset-left));
+    }
+
+    .mobile-nav ul {
+      display: flex;
+      align-items: stretch;
+      justify-content: space-between;
+      gap: 2px;
+      width: 100%;
+      max-width: 520px;
+      margin-inline: auto;
+    }
+
+    .mobile-nav li {
+      flex: 1 1 0;
+      min-width: 0;
+    }
+
+    .mobile-nav__link {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      min-height: 48px;
+      padding: 6px 2px;
+      color: var(--text-secondary);
+      transition: color var(--transition);
+    }
+
+    .mobile-nav__link:hover,
+    .mobile-nav__link:focus-visible {
+      color: var(--text);
+    }
+
+    .mobile-nav__link.is-active {
+      color: var(--accent);
+    }
+
+    .mobile-nav__link.is-active::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 50%;
+      width: 18px;
+      height: 1px;
+      background: currentColor;
+      transform: translateX(-50%);
+    }
+
+    .mobile-nav__icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 20px;
+      height: 20px;
+    }
+
+    .mobile-nav__icon svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    .mobile-nav__label {
+      max-width: 100%;
+      overflow: hidden;
+      font-family: var(--font-mono);
+      font-size: 0.64rem;
+      line-height: 1.2;
+      letter-spacing: 0.04em;
+      text-overflow: ellipsis;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .mobile-nav__link.is-active .mobile-nav__label {
+      font-weight: 500;
+    }
   }
 
-  .mobile-nav__top {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    height: var(--nav-height);
-    border-bottom: 1px solid var(--border);
-  }
-
-  .mobile-nav__label {
-    font-family: var(--font-mono);
-    font-size: 0.7rem;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--text-secondary);
-  }
-
-  .mobile-nav__close {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 38px;
-    height: 38px;
-    border: 1px solid var(--border);
-    border-radius: 50%;
-  }
-
-  .mobile-nav__close svg {
-    width: 17px;
-    height: 17px;
-  }
-
-  .mobile-nav__links {
-    display: flex;
-    flex-direction: column;
-    margin-top: clamp(24px, 6vh, 56px);
-    border-top: 1px solid var(--border);
-  }
-
-  .mobile-nav__link {
-    display: grid;
-    grid-template-columns: 34px 1fr auto;
-    align-items: center;
-    gap: 12px;
-    padding: clamp(14px, 2.4vh, 22px) 0;
-    border-bottom: 1px solid var(--border);
-    color: var(--text-secondary);
-    transition: color var(--transition);
-  }
-
-  .mobile-nav__link:hover,
-  .mobile-nav__link.is-active {
-    color: var(--text);
-  }
-
-  .mobile-nav__index {
-    font-family: var(--font-mono);
-    font-size: 0.68rem;
-    color: var(--text-secondary);
-  }
-
-  .mobile-nav__text {
-    font-family: var(--font-display);
-    font-size: clamp(1.6rem, 7vw, 2.4rem);
-    font-weight: 500;
-    letter-spacing: -0.04em;
-  }
-
-  .mobile-nav__link.is-active .mobile-nav__text {
-    color: var(--accent);
-  }
-
-  .mobile-nav__link svg {
-    width: 20px;
-    height: 20px;
-    color: var(--text-secondary);
-  }
-
-  .mobile-nav__foot {
-    display: flex;
-    align-items: flex-end;
-    justify-content: space-between;
-    gap: 24px;
-    margin-top: auto;
-    padding-top: 32px;
-    flex-wrap: wrap;
-  }
-
-  .mobile-nav__controls {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-  }
-
-  .mobile-nav__socials {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 16px;
-    font-family: var(--font-mono);
-    font-size: 0.7rem;
-    letter-spacing: 0.07em;
-    text-transform: uppercase;
-    color: var(--text-secondary);
-  }
-
-  .mobile-nav__socials a:hover {
-    color: var(--accent);
+  @media (prefers-reduced-motion: reduce) {
+    .mobile-nav__link {
+      transition: none;
+    }
   }
 </style>
-
-<script>
-  const overlay = document.getElementById('mobile-nav');
-  const openButton = document.getElementById('menu-toggle');
-  const closeButton = document.getElementById('menu-close');
-  let lastFocused: HTMLElement | null = null;
-
-  const open = () => {
-    if (!overlay || !openButton) return;
-    lastFocused = document.activeElement as HTMLElement;
-    overlay.hidden = false;
-    overlay.setAttribute('aria-hidden', 'false');
-    requestAnimationFrame(() => overlay.classList.add('is-open'));
-    openButton.setAttribute('aria-expanded', 'true');
-    document.body.style.overflow = 'hidden';
-    closeButton?.focus();
-  };
-
-  const close = () => {
-    if (!overlay || !openButton) return;
-    overlay.classList.remove('is-open');
-    overlay.setAttribute('aria-hidden', 'true');
-    openButton.setAttribute('aria-expanded', 'false');
-    document.body.style.overflow = '';
-    window.setTimeout(() => {
-      overlay.hidden = true;
-    }, 220);
-    lastFocused?.focus();
-  };
-
-  openButton?.addEventListener('click', open);
-  closeButton?.addEventListener('click', close);
-
-  overlay?.addEventListener('click', (event) => {
-    if (event.target === overlay) close();
-  });
-
-  overlay?.querySelectorAll('a').forEach((link) => link.addEventListener('click', close));
-
-  document.addEventListener('keydown', (event) => {
-    if (event.key === 'Escape' && overlay && !overlay.hidden) close();
-  });
-</script>
