@@ -63,6 +63,9 @@ The development server runs at <http://localhost:4321>.
 .
 ├── .github/workflows/deploy.yml
 ├── public/
+│   ├── images/projects/
+│   │   ├── moviestream/
+│   │   └── erp-construction-services/
 │   ├── favicon.svg
 │   └── robots.txt
 ├── src/
@@ -200,9 +203,11 @@ routeSlug: 'project-name'
 ---
 ```
 
-The page view renders the project title, metadata, and case-study fields. The MDX body is for the longer write-up.
+The page view renders the project title, metadata, case-study fields, and any screenshots listed in `screenshots`. The MDX body is for the longer write-up.
 
-Project links currently use placeholder URLs such as `https://example.com`. Replace them with real project and repository links before publishing.
+MovieStream and ERP Construction Services use real repository URLs and optimized WebP captures from their source repositories, stored under `public/images/projects/moviestream/` and `public/images/projects/erp-construction-services/`. The original three entries still use placeholder links; replace them with real URLs when those projects are published.
+
+Screenshot entries support `src`, `alt`, `caption`, `width`, `height`, and an optional `wide` flag for a full-width gallery item.
 
 ### Notes
 
@@ -321,6 +326,10 @@ Check both locales for the main routes:
 /id/about/
 /projects/
 /id/projects/
+/projects/moviestream/
+/id/projects/moviestream/
+/projects/erp-construction-services/
+/id/projects/erp-construction-services/
 /blog/
 /id/blog/
 /contact/
