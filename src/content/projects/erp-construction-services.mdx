@@ -1,0 +1,73 @@
+---
+title: 'ERP Construction Services'
+description: 'ERP operasional konstruksi yang menghubungkan penawaran, proyek, pembelian, inventaris, absensi, biaya, faktur, dan laporan manajemen dalam satu aplikasi Laravel.'
+icon: 'fa-solid fa-building'
+category: 'Aplikasi bisnis'
+period: '2025–2026'
+tags: ['Laravel 8', 'MySQL 8', 'Blade', 'Vanilla CSS', 'PHPUnit', 'Docker']
+githubUrl: 'https://github.com/galihagussaputra/erp-contruction-services'
+featured: true
+status: 'completed'
+order: -1
+pubDate: 2026-11-14
+problem: 'Operasional konstruksi yang tersebar di spreadsheet menyulitkan penyatuan penawaran yang disetujui, biaya proyek, material yang dibeli, absensi lapangan, dan tagihan pelanggan. Aplikasi ini menyimpan catatan tersebut dalam satu alur kerja sehingga tim kantor dan proyek dapat mengikuti pekerjaan dari penawaran hingga faktur.'
+contribution: 'Mengimplementasikan modul ERP, layanan domain, validasi dan otorisasi permintaan, antarmuka Blade yang dirender di server, data demo, pengujian, konfigurasi Docker, serta dokumentasi arsitektur.'
+implementation: 'Aplikasi ini adalah monolith Laravel yang dirender di server: Nginx melayani aset statis dan meneruskan permintaan PHP ke PHP-FPM, sementara Blade merender setiap layar. Form Requests menangani validasi dan otorisasi detail, dan gate approve membatasi persetujuan penawaran, penerimaan barang, serta biaya hanya untuk peran admin atau manager. DocumentNumberService menghasilkan nomor berurutan di dalam transaksi. StockService menjadi satu-satunya penulis kuantitas inventaris dan menangani barang masuk, barang keluar, atribusi biaya proyek, dan pembatalan. Laporan memakai query SQL terkelompok dan agregat Eloquent, bukan memuat seluruh koleksi data.'
+improvements: 'Basis Laravel awal dikembangkan dengan migrasi domain dan data demo, antarmuka seluruh modul, penomoran dokumen dalam transaksi, satu layanan buku stok, aturan persetujuan, serta indeks database untuk pelaporan. Pengujian PHPUnit ditambahkan untuk rendering, pergerakan stok, dan total faktur. Tumpukan teknologi dibungkus Docker dengan aset yang dapat direproduksi, versi Composer dan Webpack yang dikunci untuk Laravel lama, serta skrip Playwright untuk tangkapan layar dan audit tata letak.'
+challenges: 'Kuantitas stok dan biaya proyek harus tetap konsisten ketika penerimaan, pengeluaran, dan pembatalan dilakukan dari layar berbeda; semua perubahan diarahkan melalui StockService dan transaksi database. Persetujuan juga bergantung pada peran dan status dokumen, sehingga gate digabungkan dengan pemeriksaan siklus hidup dokumen. Laravel 8 pada peralatan PHP terkini memerlukan Composer 2.7 dan Webpack 5.93 yang dikunci.'
+features:
+  - 'Pelanggan, proyek, dan penawaran dengan persetujuan serta keluaran PDF'
+  - 'Anggaran proyek, biaya aktual, progres, anggota tim, dan linimasa'
+  - 'Pesanan pembelian yang menerima barang ke dalam inventaris'
+  - 'Pergerakan stok dengan atribusi biaya proyek dan pembatalan'
+  - 'Faktur dengan rincian, pembayaran sebagian, dan keluaran PDF'
+  - 'Direktori karyawan, absensi masuk dan pulang, serta persetujuan biaya'
+  - 'Laporan keuangan, proyek, inventaris, karyawan, dan pelanggan'
+image: '/images/projects/erp-construction-services/erp-projects.webp'
+imageAlt: 'Daftar proyek ERP Construction Services dengan kode, pelanggan, anggaran, dan progres'
+imageWidth: 1200
+imageHeight: 675
+screenshots:
+  - src: '/images/projects/erp-construction-services/erp-project-detail.webp'
+    alt: 'Layar detail proyek ERP Construction Services dengan anggaran, progres, tim, dan linimasa'
+    caption: 'Detail proyek dengan anggaran, progres, tim, dan linimasa.'
+    width: 960
+    height: 540
+  - src: '/images/projects/erp-construction-services/erp-quotations.webp'
+    alt: 'Daftar penawaran ERP Construction Services dengan status persetujuan dan aksi dokumen'
+    caption: 'Daftar penawaran dengan status persetujuan dan aksi PDF.'
+    width: 960
+    height: 540
+  - src: '/images/projects/erp-construction-services/erp-invoices.webp'
+    alt: 'Daftar faktur ERP Construction Services dengan status pembayaran dan total'
+    caption: 'Daftar faktur dengan status pembayaran dan total.'
+    width: 960
+    height: 540
+  - src: '/images/projects/erp-construction-services/erp-inventory.webp'
+    alt: 'Daftar inventaris ERP Construction Services dengan kuantitas dan batas pemesanan ulang'
+    caption: 'Tingkat inventaris dan batas pemesanan ulang.'
+    width: 960
+    height: 678
+  - src: '/images/projects/erp-construction-services/erp-financial-report.webp'
+    alt: 'Laporan keuangan ERP Construction Services dengan pendapatan dan piutang'
+    caption: 'Laporan keuangan dari query terkelompok.'
+    width: 960
+    height: 540
+lang: 'id'
+translationKey: 'erp-construction-services'
+routeSlug: 'erp-construction-services'
+---
+
+## Alur bisnis
+
+Alur utama dimulai dari pelanggan dan penawaran. Setelah disetujui, proyek mencatat anggaran, progres, tim, dan linimasa. Pesanan pembelian kepada pemasok diterima ke inventaris; pengeluaran dan pembatalan stok ditulis melalui StockService serta dapat dibebankan ke proyek. Faktur dan pembayaran sebagian menutup siklus komersial, sementara biaya melalui gerbang persetujuan.
+
+## Pelaporan dan akses
+
+ReportController menyusun query terkelompok untuk ringkasan keuangan, kinerja proyek, valuasi inventaris, kinerja karyawan, dan analisis pelanggan. Setiap modul memerlukan autentikasi. Gate `approve` membatasi persetujuan penawaran, penerimaan pesanan pembelian, dan persetujuan biaya bagi peran admin serta manager. Layar daftar memakai filter query string dan pagination sehingga tautan tetap dapat dibagikan.
+
+## Catatan implementasi
+
+Antarmuka memakai sistem desain CSS sendiri dengan JavaScript kecil berbasis atribut data untuk sidebar, tab, dialog, dan editor rincian barang. Layar inti tetap berfungsi tanpa skrip sisi klien. Repositori memiliki pengujian PHPUnit serta skrip Playwright untuk menangkap tangkapan layar dan memeriksa tata letak pada 1920, 1366, 768, dan 390 px.
+
+Tangkapan layar di halaman portofolio ini berasal dari data demo hasil seeder, bukan database perusahaan langsung. Tidak ada demo daring yang ditautkan untuk proyek ini.
