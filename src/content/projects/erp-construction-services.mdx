@@ -8,8 +8,8 @@ tags: ['Laravel 8', 'MySQL 8', 'Blade', 'Vanilla CSS', 'PHPUnit', 'Docker']
 githubUrl: 'https://github.com/galihagussaputra/erp-contruction-services'
 featured: true
 status: 'completed'
-order: -1
-pubDate: 2026-11-14
+order: -2
+pubDate: 2025-12-08
 problem: 'Operasional konstruksi yang tersebar di spreadsheet menyulitkan penyatuan penawaran yang disetujui, biaya proyek, material yang dibeli, absensi lapangan, dan tagihan pelanggan. Aplikasi ini menyimpan catatan tersebut dalam satu alur kerja sehingga tim kantor dan proyek dapat mengikuti pekerjaan dari penawaran hingga faktur.'
 contribution: 'Mengimplementasikan modul ERP, layanan domain, validasi dan otorisasi permintaan, antarmuka Blade yang dirender di server, data demo, pengujian, konfigurasi Docker, serta dokumentasi arsitektur.'
 implementation: 'Aplikasi ini adalah monolith Laravel yang dirender di server: Nginx melayani aset statis dan meneruskan permintaan PHP ke PHP-FPM, sementara Blade merender setiap layar. Form Requests menangani validasi dan otorisasi detail, dan gate approve membatasi persetujuan penawaran, penerimaan barang, serta biaya hanya untuk peran admin atau manager. DocumentNumberService menghasilkan nomor berurutan di dalam transaksi. StockService menjadi satu-satunya penulis kuantitas inventaris dan menangani barang masuk, barang keluar, atribusi biaya proyek, dan pembatalan. Laporan memakai query SQL terkelompok dan agregat Eloquent, bukan memuat seluruh koleksi data.'

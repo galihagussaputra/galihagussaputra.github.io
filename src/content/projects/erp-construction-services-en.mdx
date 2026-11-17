@@ -8,8 +8,8 @@ tags: ['Laravel 8', 'MySQL 8', 'Blade', 'Vanilla CSS', 'PHPUnit', 'Docker']
 githubUrl: 'https://github.com/galihagussaputra/erp-contruction-services'
 featured: true
 status: 'completed'
-order: -1
-pubDate: 2026-11-14
+order: -2
+pubDate: 2025-12-08
 problem: 'Construction operations spread across spreadsheets make it hard to connect a signed quotation with project cost, purchased materials, site attendance, and what a customer still owes. This application keeps those records in one workflow so an office or project team can follow a job from estimate to invoice.'
 contribution: 'Implemented the ERP modules, domain services, request validation and authorization, server-rendered Blade interface, demo seed data, tests, Docker setup, and architecture documentation.'
 implementation: 'The application is a server-rendered Laravel monolith: Nginx serves static assets and forwards PHP requests to PHP-FPM, while Blade renders every screen. Form Requests own validation and fine-grained authorization, and an approve gate limits quotation, receiving, and expense actions to admin or manager roles. DocumentNumberService generates sequential numbers inside transactions. StockService is the only writer of inventory quantities and handles stock in, stock out, project cost attribution, and reversal. Reports use grouped SQL queries and Eloquent aggregates instead of loading whole collections.'

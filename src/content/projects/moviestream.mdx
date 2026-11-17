@@ -8,8 +8,8 @@ tags: ['Laravel 10', 'Vue 3', 'Inertia.js', 'Tailwind CSS', 'MySQL', 'TMDB API']
 githubUrl: 'https://github.com/galihagussaputra/MovieStream'
 featured: true
 status: 'completed'
-order: -2
-pubDate: 2026-11-08
+order: -1
+pubDate: 2023-06-19
 problem: 'Katalog film yang dikelola manual akan cepat usang. MovieStream menyimpan data yang bisa diedit di MySQL dan memakai TMDB untuk pencarian serta metadata, sehingga data lokal dan judul yang sedang populer bisa hadir bersamaan.'
 contribution: 'Membangun dan memodifikasi aplikasi Laravel: migrasi dan model Eloquent, controller publik dan admin, halaman Vue melalui Inertia, klien TMDB, validasi, serta lingkungan pengembangan Docker.'
 implementation: 'Controller publik dan admin memakai model Eloquent terpisah untuk film, acara TV, musim, episode, pemeran, genre, tag, trailer, dan tautan unduhan. Satu TmdbService menangani autentikasi bearer v4 dengan fallback kunci v3, cache respons, dan URL gambar. Halaman Vue 3 dikirim melalui Inertia sehingga routing tetap berada di server, sementara tampilan katalog dan Explore bersifat reaktif.'
@@ -23,7 +23,7 @@ features:
   - 'Halaman Explore realtime untuk tren, judul populer, pencarian, dan rekomendasi'
   - 'Pengelolaan trailer, tautan unduhan, pemeran, genre, dan tag per judul'
   - 'Respons TMDB yang di-cache dengan TTL yang dapat diatur'
-image: '/images/projects/moviestream/moviestream-catalog.webp'
+image: '/images/projects/moviestream/moviestream-home.webp'
 imageAlt: 'Halaman katalog MovieStream dengan grid poster, kolom pencarian, dan pagination'
 imageWidth: 1200
 imageHeight: 928
@@ -38,7 +38,7 @@ screenshots:
     caption: 'Katalog acara TV setelah dukungan serial ditambahkan.'
     width: 960
     height: 743
-  - src: '/images/projects/moviestream/moviestream-home.webp'
+  - src: '/images/projects/moviestream/moviestream-catalog.webp'
     alt: 'Halaman utama MovieStream dengan bagian tren dan tautan katalog'
     caption: 'Halaman utama dengan judul tren dari TMDB.'
     width: 720

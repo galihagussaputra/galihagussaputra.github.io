@@ -8,8 +8,8 @@ tags: ['Laravel 10', 'Vue 3', 'Inertia.js', 'Tailwind CSS', 'MySQL', 'TMDB API']
 githubUrl: 'https://github.com/galihagussaputra/MovieStream'
 featured: true
 status: 'completed'
-order: -2
-pubDate: 2026-11-08
+order: -1
+pubDate: 2023-06-19
 problem: 'A curated movie catalog becomes stale when every title has to be entered by hand. MovieStream keeps editable records in MySQL while using TMDB for discovery and metadata, so the local catalog and current trending data can coexist.'
 contribution: 'Built and modified the Laravel application: migrations and Eloquent models, public and admin controllers, Vue pages delivered through Inertia, the TMDB client, validation, and the Docker development setup.'
 implementation: 'Public and admin controllers use separate Eloquent models for movies, TV shows, seasons, episodes, cast, genres, tags, trailers, and downloads. A single TmdbService handles v4 bearer authentication with a v3 fallback, response caching, and image URLs. Vue 3 pages are served through Inertia, which keeps server-side routing while letting catalog and Explore views render as reactive components.'
@@ -23,7 +23,7 @@ features:
   - 'Realtime Explore pages for trending, popular titles, search, and recommendations'
   - 'Trailer, download link, cast, genre, and tag management per title'
   - 'Cached TMDB responses with a configurable TTL'
-image: '/images/projects/moviestream/moviestream-catalog.webp'
+image: '/images/projects/moviestream/moviestream-home.webp'
 imageAlt: 'MovieStream catalog page with a poster grid, search field, and pagination'
 imageWidth: 1200
 imageHeight: 928
@@ -38,7 +38,7 @@ screenshots:
     caption: 'TV show catalog after the series support was added.'
     width: 960
     height: 743
-  - src: '/images/projects/moviestream/moviestream-home.webp'
+  - src: '/images/projects/moviestream/moviestream-catalog.webp'
     alt: 'MovieStream home page with a trending section and catalog links'
     caption: 'Home page with trending titles supplied by TMDB.'
     width: 720
