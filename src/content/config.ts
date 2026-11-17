@@ -31,12 +31,23 @@ const skills = defineCollection({
   }),
 });
 
+const projectScreenshot = z.object({
+  src: z.string(),
+  alt: z.string(),
+  caption: z.string(),
+  width: z.number(),
+  height: z.number(),
+  wide: z.boolean().default(false),
+});
+
 const projects = defineCollection({
   type: 'content',
   schema: z.object({
     title: z.string(),
     description: z.string(),
     icon: z.string().default('fa-solid fa-code'),
+    category: z.string().optional(),
+    period: z.string().optional(),
     tags: z.array(z.string()).default([]),
     liveUrl: z.string().url().optional(),
     githubUrl: z.string().url().optional(),
@@ -47,7 +58,14 @@ const projects = defineCollection({
     problem: z.string().optional(),
     contribution: z.string().optional(),
     challenges: z.string().optional(),
+    features: z.array(z.string()).default([]),
+    implementation: z.string().optional(),
+    improvements: z.string().optional(),
     image: z.string().optional(),
+    imageAlt: z.string().optional(),
+    imageWidth: z.number().optional(),
+    imageHeight: z.number().optional(),
+    screenshots: z.array(projectScreenshot).default([]),
     lang,
     translationKey: z.string(),
     routeSlug: z.string().optional(),

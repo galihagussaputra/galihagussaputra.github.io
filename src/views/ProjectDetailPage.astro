@@ -22,6 +22,7 @@ const statusClass = (status: 'in-progress' | 'completed' | 'planned') =>
   status === 'in-progress' ? 'status--progress' : status === 'planned' ? 'status--planned' : 'status--complete';
 
 const projectUrl = new URL(localizePath(`/projects/${project.data.routeSlug ?? project.slug}/`, lang), site.url).toString();
+const sameAs = [project.data.liveUrl, project.data.githubUrl].filter(Boolean);
 
 const jsonLd = {
   '@context': 'https://schema.org',
@@ -36,7 +37,8 @@ const jsonLd = {
     name: site.name,
     url: site.url,
   },
-  ...(project.data.liveUrl ? { sameAs: [project.data.liveUrl, project.data.githubUrl].filter(Boolean) } : {}),
+  ...(sameAs.length > 0 ? { sameAs } : {}),
+  ...(project.data.image ? { image: new URL(project.data.image, site.url).toString() } : {}),
 };
 ---
 
@@ -73,11 +75,21 @@ const jsonLd = {
         <dd>{formatDate(project.data.pubDate, lang)}</dd>
       </div>
       <div>
+        <dt>{t('projects.period')}</dt>
+        <dd>{project.data.period ?? formatYear(project.data.pubDate)}</dd>
+      </div>
+      <div>
         <dt>{t('about.metaStatus')}</dt>
         <dd class:list={['status', statusClass(project.data.status)]}>
           {statusLabel(project.data.status)}
         </dd>
       </div>
+      {project.data.category && (
+        <div>
+          <dt>{t('projects.category')}</dt>
+          <dd>{project.data.category}</dd>
+        </div>
+      )}
       <div>
         <dt>{t('projects.role')}</dt>
         <dd>{t('projects.roleValue')}</dd>
@@ -128,23 +140,76 @@ const jsonLd = {
           <p>{project.data.problem}</p>
         </section>
       )}
+
+      {project.data.image && (
+        <figure class="project-figure reveal">
+          <img
+            src={project.data.image}
+            alt={project.data.imageAlt ?? project.data.title}
+            width={project.data.imageWidth ?? 1200}
+            height={project.data.imageHeight ?? 750}
+            loading="lazy"
+            decoding="async"
+          />
+        </figure>
+      )}
+
+      {project.data.features.length > 0 && (
+        <section class="project-note reveal">
+          <h2>{t('projects.features')}</h2>
+          <ul class="feature-list">
+            {project.data.features.map((feature) => <li>{feature}</li>)}
+          </ul>
+        </section>
+      )}
+
+      {project.data.implementation && (
+        <section class="project-note reveal">
+          <h2>{t('projects.implementation')}</h2>
+          <p>{project.data.implementation}</p>
+        </section>
+      )}
+
       {project.data.contribution && (
         <section class="project-note reveal">
           <h2>{t('projects.contribution')}</h2>
           <p>{project.data.contribution}</p>
         </section>
       )}
+
+      {project.data.improvements && (
+        <section class="project-note reveal">
+          <h2>{t('projects.improvements')}</h2>
+          <p>{project.data.improvements}</p>
+        </section>
+      )}
+
+      {project.data.screenshots.length > 0 && (
+        <section class="project-gallery-section reveal">
+          <h2>{t('projects.gallery')}</h2>
+          <div class="project-gallery">
+            {project.data.screenshots.map((screenshot) => (
+              <figure class:list={['project-gallery__item', { 'project-gallery__item--wide': screenshot.wide }]}>
+                <img
+                  src={screenshot.src}
+                  alt={screenshot.alt}
+                  width={screenshot.width}
+                  height={screenshot.height}
+                  loading="lazy"
+                  decoding="async"
+                />
+                <figcaption>{screenshot.caption}</figcaption>
+              </figure>
+            ))}
+          </div>
+        </section>
+      )}
+
       {project.data.challenges && (
         <section class="project-note reveal">
           <h2>{t('projects.challenges')}</h2>
           <p>{project.data.challenges}</p>
         </section>
-      )}
-
-      {project.data.image && (
-        <figure class="project-figure reveal">
-          <img src={project.data.image} alt={project.data.title} width="1200" height="750" loading="lazy" />
-        </figure>
       )}
 
       <article class="prose project-prose reveal">
@@ -213,7 +278,7 @@ const jsonLd = {
 
   .project-facts {
     display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 0;
     margin-top: clamp(32px, 5vw, 56px);
     border-top: 1px solid var(--border);
@@ -310,12 +375,80 @@ const jsonLd = {
     color: var(--text-secondary);
   }
 
+  .feature-list {
+    display: grid;
+    gap: 8px;
+    margin-top: 14px;
+    max-width: var(--measure);
+  }
+
+  .feature-list li {
+    position: relative;
+    padding-left: 18px;
+    color: var(--text-secondary);
+  }
+
+  .feature-list li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.78em;
+    width: 8px;
+    height: 1px;
+    background: var(--accent);
+  }
+
   .project-figure {
     margin-bottom: 32px;
   }
 
   .project-figure img {
+    width: 100%;
+    height: auto;
     border: 1px solid var(--border);
+  }
+
+  .project-gallery-section {
+    margin-bottom: 32px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .project-gallery-section h2 {
+    font-size: var(--step-1);
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    margin-bottom: 16px;
+  }
+
+  .project-gallery {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+    align-items: start;
+  }
+
+  .project-gallery__item {
+    min-width: 0;
+  }
+
+  .project-gallery__item--wide {
+    grid-column: 1 / -1;
+    max-width: 720px;
+  }
+
+  .project-gallery__item img {
+    width: 100%;
+    height: auto;
+    border: 1px solid var(--border);
+  }
+
+  .project-gallery__item figcaption {
+    margin-top: 8px;
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    line-height: 1.5;
+    color: var(--text-secondary);
   }
 
   .project-prose {
@@ -352,6 +485,10 @@ const jsonLd = {
 
   @media (max-width: 600px) {
     .project-aside {
+      grid-template-columns: 1fr;
+    }
+
+    .project-gallery {
       grid-template-columns: 1fr;
     }
 

@@ -1,0 +1,62 @@
+---
+title: 'MovieStream'
+description: 'Movie and TV catalog with a local database, TMDB imports, and realtime Explore pages built with Laravel and Vue.'
+icon: 'fa-solid fa-film'
+category: 'Catalog application'
+period: '2023–2026'
+tags: ['Laravel 10', 'Vue 3', 'Inertia.js', 'Tailwind CSS', 'MySQL', 'TMDB API']
+githubUrl: 'https://github.com/galihagussaputra/MovieStream'
+featured: true
+status: 'completed'
+order: -2
+pubDate: 2026-11-08
+problem: 'A curated movie catalog becomes stale when every title has to be entered by hand. MovieStream keeps editable records in MySQL while using TMDB for discovery and metadata, so the local catalog and current trending data can coexist.'
+contribution: 'Built and modified the Laravel application: migrations and Eloquent models, public and admin controllers, Vue pages delivered through Inertia, the TMDB client, validation, and the Docker development setup.'
+implementation: 'Public and admin controllers use separate Eloquent models for movies, TV shows, seasons, episodes, cast, genres, tags, trailers, and downloads. A single TmdbService handles v4 bearer authentication with a v3 fallback, response caching, and image URLs. Vue 3 pages are served through Inertia, which keeps server-side routing while letting catalog and Explore views render as reactive components.'
+improvements: 'The original catalog was extended with a realtime Explore area, TV show and episode support, a centralized API client, and a configurable cache TTL. Admin writes gained validation and constrained nested routes, related records are removed through cascading deletes, and a committed API key was replaced with environment-based credentials. Docker services and a browser-reachable Vite HMR host make the local setup repeatable on Windows and WSL.'
+challenges: 'The main constraint was combining two data sources without duplicating state: imported records stay editable in MySQL, while Explore reads TMDB at request time and keeps results only in temporary cache. Sending the v3 key in URLs was replaced by the v4 bearer header. Docker networking also required separating the Vite bind address from the browser HMR host.'
+features:
+  - 'Movie and TV show catalog with search, pagination, and sorting'
+  - 'Detail pages for movies, episodes, cast, genres, and tags'
+  - 'Admin CRUD behind role-protected routes with server-side validation'
+  - 'TMDB metadata import into local MySQL tables'
+  - 'Realtime Explore pages for trending, popular titles, search, and recommendations'
+  - 'Trailer, download link, cast, genre, and tag management per title'
+  - 'Cached TMDB responses with a configurable TTL'
+image: '/images/projects/moviestream/moviestream-catalog.webp'
+imageAlt: 'MovieStream catalog page with a poster grid, search field, and pagination'
+imageWidth: 1200
+imageHeight: 928
+screenshots:
+  - src: '/images/projects/moviestream/moviestream-movie-detail.webp'
+    alt: 'Movie detail page showing synopsis, cast, and related titles'
+    caption: 'Movie detail view from the local catalog.'
+    width: 960
+    height: 789
+  - src: '/images/projects/moviestream/moviestream-tv-shows.webp'
+    alt: 'TV show catalog grid in MovieStream with posters and pagination'
+    caption: 'TV show catalog after the series support was added.'
+    width: 960
+    height: 743
+  - src: '/images/projects/moviestream/moviestream-home.webp'
+    alt: 'MovieStream home page with a trending section and catalog links'
+    caption: 'Home page with trending titles supplied by TMDB.'
+    width: 720
+    height: 1089
+    wide: true
+lang: 'en'
+translationKey: 'moviestream'
+routeSlug: 'moviestream'
+---
+
+## Data and request flow
+
+The schema stores movies, TV shows, seasons, episodes, cast, genres, tags, trailers, and downloads in local tables. Public controllers render catalog and detail pages; admin controllers write to the same tables behind `auth`, `verified`, and `admin` role middleware.
+
+`TmdbService` is the single client for TMDB requests. It prefers a v4 read access token sent as a bearer header and falls back to a v3 key when no token is configured. Responses are cached for a configurable TTL, so repeated Explore and trending requests do not call the API on every page load.
+
+## Two data paths
+
+Imported metadata is persisted in MySQL and can be curated from the admin panel. Explore pages read TMDB at request time and keep responses only in the temporary cache. Keeping the paths separate means admin edits are not overwritten by a refresh, and Explore can show current titles without growing the local database.
+
+The repository documents a Docker-based local setup with Laravel, Vite, and MySQL. No hosted demo is linked for this project.

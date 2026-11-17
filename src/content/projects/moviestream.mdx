@@ -1,0 +1,62 @@
+---
+title: 'MovieStream'
+description: 'Katalog film dan acara TV dengan database lokal, impor TMDB, dan halaman Explore realtime berbasis Laravel dan Vue.'
+icon: 'fa-solid fa-film'
+category: 'Aplikasi katalog'
+period: '2023–2026'
+tags: ['Laravel 10', 'Vue 3', 'Inertia.js', 'Tailwind CSS', 'MySQL', 'TMDB API']
+githubUrl: 'https://github.com/galihagussaputra/MovieStream'
+featured: true
+status: 'completed'
+order: -2
+pubDate: 2026-11-08
+problem: 'Katalog film yang dikelola manual akan cepat usang. MovieStream menyimpan data yang bisa diedit di MySQL dan memakai TMDB untuk pencarian serta metadata, sehingga data lokal dan judul yang sedang populer bisa hadir bersamaan.'
+contribution: 'Membangun dan memodifikasi aplikasi Laravel: migrasi dan model Eloquent, controller publik dan admin, halaman Vue melalui Inertia, klien TMDB, validasi, serta lingkungan pengembangan Docker.'
+implementation: 'Controller publik dan admin memakai model Eloquent terpisah untuk film, acara TV, musim, episode, pemeran, genre, tag, trailer, dan tautan unduhan. Satu TmdbService menangani autentikasi bearer v4 dengan fallback kunci v3, cache respons, dan URL gambar. Halaman Vue 3 dikirim melalui Inertia sehingga routing tetap berada di server, sementara tampilan katalog dan Explore bersifat reaktif.'
+improvements: 'Katalog awal dikembangkan dengan area Explore realtime, dukungan acara TV dan episode, klien API terpusat, serta TTL cache yang dapat diatur. Penulisan data admin mendapat validasi dan pembatasan rute bersarang, data terkait dihapus melalui cascade, dan kunci API yang pernah ikut ter-commit diganti dengan kredensial dari lingkungan aplikasi. Layanan Docker dan host HMR Vite yang dapat diakses browser membuat proses instalasi lokal lebih konsisten di Windows dan WSL.'
+challenges: 'Tantangan utamanya adalah menggabungkan dua sumber data tanpa menduplikasi state: data hasil impor tetap dapat diedit di MySQL, sementara Explore membaca TMDB saat permintaan dan menyimpan hasilnya hanya di cache sementara. Kunci v3 yang terkirim lewat URL diganti dengan header bearer v4. Jaringan Docker juga memerlukan pemisahan antara alamat bind Vite dan host HMR yang dipakai browser.'
+features:
+  - 'Katalog film dan acara TV dengan pencarian, pagination, dan pengurutan'
+  - 'Halaman detail film, episode, pemeran, genre, dan tag'
+  - 'CRUD admin pada rute yang dilindungi peran dengan validasi di server'
+  - 'Impor metadata TMDB ke tabel MySQL lokal'
+  - 'Halaman Explore realtime untuk tren, judul populer, pencarian, dan rekomendasi'
+  - 'Pengelolaan trailer, tautan unduhan, pemeran, genre, dan tag per judul'
+  - 'Respons TMDB yang di-cache dengan TTL yang dapat diatur'
+image: '/images/projects/moviestream/moviestream-catalog.webp'
+imageAlt: 'Halaman katalog MovieStream dengan grid poster, kolom pencarian, dan pagination'
+imageWidth: 1200
+imageHeight: 928
+screenshots:
+  - src: '/images/projects/moviestream/moviestream-movie-detail.webp'
+    alt: 'Halaman detail film dengan sinopsis, pemeran, dan judul terkait'
+    caption: 'Tampilan detail film dari katalog lokal.'
+    width: 960
+    height: 789
+  - src: '/images/projects/moviestream/moviestream-tv-shows.webp'
+    alt: 'Grid katalog acara TV di MovieStream dengan poster dan pagination'
+    caption: 'Katalog acara TV setelah dukungan serial ditambahkan.'
+    width: 960
+    height: 743
+  - src: '/images/projects/moviestream/moviestream-home.webp'
+    alt: 'Halaman utama MovieStream dengan bagian tren dan tautan katalog'
+    caption: 'Halaman utama dengan judul tren dari TMDB.'
+    width: 720
+    height: 1089
+    wide: true
+lang: 'id'
+translationKey: 'moviestream'
+routeSlug: 'moviestream'
+---
+
+## Alur data dan permintaan
+
+Skema menyimpan film, acara TV, musim, episode, pemeran, genre, tag, trailer, dan unduhan di tabel lokal. Controller publik merender halaman katalog dan detail; controller admin menulis ke tabel yang sama di balik middleware `auth`, `verified`, dan peran `admin`.
+
+`TmdbService` menjadi satu-satunya klien untuk permintaan TMDB. Layanan ini lebih mengutamakan token akses baca v4 yang dikirim sebagai header bearer dan memakai kunci v3 bila token tidak tersedia. Respons disimpan dalam cache dengan TTL yang dapat diatur, sehingga permintaan Explore dan tren tidak memanggil API pada setiap pemuatan halaman.
+
+## Dua jalur data
+
+Metadata hasil impor tersimpan di MySQL dan dapat dikelola dari panel admin. Halaman Explore membaca TMDB saat permintaan dan menyimpan respons hanya di cache sementara. Pemisahan ini membuat suntingan admin tidak tertimpa oleh proses penyegaran, sementara Explore tetap dapat menampilkan judul terkini tanpa menambah data lokal.
+
+Repositori mendokumentasikan instalasi lokal berbasis Docker dengan Laravel, Vite, dan MySQL. Tidak ada demo daring yang ditautkan untuk proyek ini.

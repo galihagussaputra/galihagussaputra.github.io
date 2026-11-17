@@ -62,11 +62,12 @@ const jsonLd = {
         <>
           {lead && (
             <a
-              class="lead-project reveal"
+              class:list={['lead-project', 'reveal', { 'lead-project--with-image': lead.data.image }]}
               href={localizePath(`/projects/${entrySlug(lead)}/`, lang)}
             >
               <div class="lead-project__meta">
                 <span class="mono">{t('projects.featured')}</span>
+                {lead.data.category && <span class="mono">{lead.data.category}</span>}
                 <span class="mono">{formatYear(lead.data.pubDate)}</span>
               </div>
 
@@ -83,6 +84,19 @@ const jsonLd = {
                 </div>
               </div>
 
+              {lead.data.image && (
+                <figure class="lead-project__media">
+                  <img
+                    src={lead.data.image}
+                    alt={lead.data.imageAlt ?? lead.data.title}
+                    width={lead.data.imageWidth ?? 1200}
+                    height={lead.data.imageHeight ?? 750}
+                    loading="lazy"
+                    decoding="async"
+                  />
+                </figure>
+              )}
+
               <span class="lead-project__arrow" aria-hidden="true">
                 <svg viewBox="0 0 24 24">
                   <path d="M6 18L18 6M9 6h9v9" fill="none" stroke="currentColor" stroke-width="1.3"></path>
@@ -94,24 +108,39 @@ const jsonLd = {
           <div class="project-list">
             {rest.map((project, index) => (
               <a
-                class="project-row reveal"
+                class:list={['project-row', 'reveal', { 'project-row--with-image': project.data.image }]}
                 href={localizePath(`/projects/${entrySlug(project)}/`, lang)}
               >
                 <span class="project-row__index">{String(index + 2).padStart(2, '0')}</span>
                 <div class="project-row__main">
-                  <div class="project-row__heading">
-                    <h2>{project.data.title}</h2>
-                    <span class="meta">{formatYear(project.data.pubDate)}</span>
+                  <div class="project-row__content">
+                    <div class="project-row__heading">
+                      <h2>{project.data.title}</h2>
+                      <span class="meta">{formatYear(project.data.pubDate)}</span>
+                    </div>
+                    {project.data.category && <p class="project-row__category">{project.data.category}</p>}
+                    <p>{project.data.description}</p>
+                    <div class="project-row__foot">
+                      <ul class="tag-list">
+                        {project.data.tags.map((tag) => <li class="tag">{tag}</li>)}
+                      </ul>
+                      <span class:list={['status', statusClass(project.data.status)]}>
+                        {statusLabel(project.data.status)}
+                      </span>
+                    </div>
                   </div>
-                  <p>{project.data.description}</p>
-                  <div class="project-row__foot">
-                    <ul class="tag-list">
-                      {project.data.tags.map((tag) => <li class="tag">{tag}</li>)}
-                    </ul>
-                    <span class:list={['status', statusClass(project.data.status)]}>
-                      {statusLabel(project.data.status)}
-                    </span>
-                  </div>
+                  {project.data.image && (
+                    <figure class="project-row__media">
+                      <img
+                        src={project.data.image}
+                        alt={project.data.imageAlt ?? project.data.title}
+                        width={project.data.imageWidth ?? 1200}
+                        height={project.data.imageHeight ?? 750}
+                        loading="lazy"
+                        decoding="async"
+                      />
+                    </figure>
+                  )}
                 </div>
                 <span class="project-row__arrow" aria-hidden="true">
                   <svg viewBox="0 0 24 24">
@@ -174,6 +203,34 @@ const jsonLd = {
 
   .lead-project:hover {
     border-color: var(--accent);
+  }
+
+  .lead-project--with-image {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 0.9fr) 56px;
+    align-items: center;
+  }
+
+  .lead-project--with-image .lead-project__body {
+    grid-column: 1;
+    grid-row: 2;
+  }
+
+  .lead-project__media {
+    grid-column: 2;
+    grid-row: 2;
+    margin: 0;
+    min-width: 0;
+  }
+
+  .lead-project__media img {
+    width: 100%;
+    height: auto;
+    border: 1px solid var(--border);
+  }
+
+  .lead-project--with-image .lead-project__arrow {
+    grid-column: 3;
+    grid-row: 2;
   }
 
   .lead-project__meta {
@@ -249,6 +306,37 @@ const jsonLd = {
     padding-inline: clamp(8px, 1.5vw, 18px);
   }
 
+  .project-row--with-image .project-row__main {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(120px, 180px);
+    gap: clamp(16px, 2.5vw, 32px);
+    align-items: center;
+  }
+
+  .project-row__content,
+  .project-row__media {
+    min-width: 0;
+  }
+
+  .project-row .project-row__category {
+    margin-top: 6px;
+    font-family: var(--font-mono);
+    font-size: 0.66rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  .project-row__media {
+    margin: 0;
+  }
+
+  .project-row__media img {
+    width: 100%;
+    height: auto;
+    border: 1px solid var(--border);
+  }
+
   .project-row__index {
     font-family: var(--font-mono);
     font-size: 0.68rem;
@@ -298,8 +386,16 @@ const jsonLd = {
   }
 
   @media (max-width: 760px) {
-    .lead-project {
+    .lead-project,
+    .lead-project--with-image {
       grid-template-columns: 1fr;
+    }
+
+    .lead-project--with-image .lead-project__body,
+    .lead-project__media,
+    .lead-project--with-image .lead-project__arrow {
+      grid-column: 1;
+      grid-row: auto;
     }
 
     .lead-project__arrow {
@@ -308,6 +404,15 @@ const jsonLd = {
 
     .project-row {
       grid-template-columns: 34px minmax(0, 1fr);
+    }
+
+    .project-row--with-image .project-row__main {
+      grid-template-columns: 1fr;
+    }
+
+    .project-row__media {
+      order: -1;
+      max-width: 240px;
     }
 
     .project-row__arrow {
