@@ -1,32 +1,86 @@
 ---
 title: 'E-Commerce Platform'
-description: 'A complete e-commerce platform with payments, inventory management, and an admin dashboard.'
+description: 'A full-stack storefront and admin console with server-owned checkout, transactional stock reservation, and signed Stripe payments.'
 icon: 'fa-solid fa-cart-shopping'
-tags: ['React', 'Node.js', 'MongoDB', 'Stripe']
-liveUrl: 'https://example.com'
-githubUrl: 'https://github.com'
+category: 'Commerce platform'
+period: '2025–2026'
+tags: ['React 19', 'Redux Toolkit', 'Express 5', 'MongoDB 8', 'Stripe', 'Docker']
+githubUrl: 'https://github.com/galihagussaputra/e-commerce-platform'
 featured: true
-status: 'in-progress'
+status: 'completed'
 order: 1
-pubDate: 2025-06-15
+pubDate: 2025-12-01
+problem: 'The repository held a storefront concept, but the frontend build was broken and the backend stopped at early route scaffolding. Prices, stock, carts, and payment state needed a single server-owned flow that could stay consistent through concurrent checkouts and failed payments.'
+contribution: 'Audited the existing repository, rebuilt the API into layered Express services, replaced the unusable CRA frontend with Vite and React, and implemented the storefront, cart, checkout, Stripe webhooks, admin console, Docker stack, tests, and documentation.'
+implementation: 'The Express API separates routes, validators, middleware, controllers, services, and Mongoose models. Authentication uses JWTs with an admin role check, while the React client stores and restores the session through /api/auth/me and uses Redux Toolkit with route guards. Checkout accepts only product IDs and quantities; the server reloads prices, calculates shipping and tax, creates an order, and reserves stock with conditional updates inside a MongoDB replica-set transaction. The Stripe webhook verifies signatures from the raw body, claims event IDs before mutation, and handles late or failed payments idempotently.'
+improvements: 'The original base was completed end to end: catalog and search, guest and server carts, JWT sessions, Stripe Checkout, the order lifecycle, aggregation analytics, product CRUD, inventory adjustments and movements, and Docker Compose with a replica set. A later audit fixed session invalidation, payment retries, overselling, cart restoration, and the admin post-login redirect. Jest and Vitest coverage, architecture documentation, and desktop and mobile screenshots were added as well.'
+challenges: 'Stock could not be allowed to oversell when two checkouts reserved the same unit, so reservation uses atomic conditional updates inside transactions. Stripe can deliver duplicate or late events, so webhook IDs are claimed before mutation, amounts are validated, and late payments are refunded idempotently. Cart restoration after a failed session also had to avoid releasing stock twice.'
+features:
+  - 'Responsive storefront with search, category and price filters, sorting, pagination, and product detail'
+  - 'Guest cart in Redux with server cart sync after login and server-calculated totals'
+  - 'Accounts with registration, JWT session restore, profile, password change, and multiple addresses'
+  - 'Stripe Checkout with server-owned prices, stock reservation, cancellation, and order history'
+  - 'Admin console for products, inventory adjustments and movements, low stock, orders, and analytics'
+  - 'Docker Compose stack with a MongoDB replica set, healthchecks, rate limits, and security headers'
+  - 'Signed, idempotent Stripe webhook that finalizes payments and restores stock on failure'
+image: '/images/projects/e-commerce-platform/ecommerce-home.webp'
+imageAlt: 'E-Commerce Platform storefront home page with featured products and category navigation'
+imageWidth: 1200
+imageHeight: 833
+screenshots:
+  - src: '/images/projects/e-commerce-platform/ecommerce-catalog.webp'
+    alt: 'Storefront catalog with category filters, price range, sorting, and product grid'
+    caption: 'Catalog with filters, sorting, and pagination.'
+    width: 1200
+    height: 833
+  - src: '/images/projects/e-commerce-platform/ecommerce-product.webp'
+    alt: 'Product detail page with gallery, price, stock, quantity, and add-to-cart action'
+    caption: 'Product detail with server-owned price and stock state.'
+    width: 1200
+    height: 833
+  - src: '/images/projects/e-commerce-platform/ecommerce-cart.webp'
+    alt: 'Shopping cart with line items, quantities, totals, and checkout action'
+    caption: 'Cart totals calculated on the server.'
+    width: 1200
+    height: 833
+  - src: '/images/projects/e-commerce-platform/ecommerce-admin-dashboard.webp'
+    alt: 'Admin overview with revenue KPIs, sales trend, low stock, top products, and recent orders'
+    caption: 'Admin overview driven by real order data.'
+    width: 1200
+    height: 872
+  - src: '/images/projects/e-commerce-platform/ecommerce-admin-products.webp'
+    alt: 'Admin product table with categories, prices, stock, and edit actions'
+    caption: 'Product management with inline create and edit.'
+    width: 1200
+    height: 1288
+  - src: '/images/projects/e-commerce-platform/ecommerce-admin-inventory.webp'
+    alt: 'Admin inventory screen with stock totals, adjustment form, and product stock table'
+    caption: 'Inventory totals, adjustments, and stock levels.'
+    width: 1200
+    height: 1574
+  - src: '/images/projects/e-commerce-platform/ecommerce-admin-orders.webp'
+    alt: 'Admin order table with status filters and order actions'
+    caption: 'Order list with status transitions and cancellation.'
+    width: 1200
+    height: 750
+  - src: '/images/projects/e-commerce-platform/ecommerce-admin-analytics.webp'
+    alt: 'Admin analytics with date range, revenue summary, sales table, and inventory position'
+    caption: 'Analytics from MongoDB aggregation pipelines.'
+    width: 1200
+    height: 1066
 lang: 'en'
 translationKey: 'e-commerce'
 routeSlug: 'e-commerce'
 ---
 
-A complete e-commerce platform built with a focus on user experience and performance.
+## Buying flow
 
-## Main Features
+The storefront reads the catalog from the API and keeps filters in the URL. A guest cart lives in Redux; after login it is synced to the server cart. Checkout sends only product IDs and quantities. The API reloads prices, calculates shipping and tax, creates a pending order, reserves stock atomically, and redirects the browser to Stripe-hosted checkout. A signed webhook finalizes the order, while cancellation and expiry release the reservation once and restore the cart.
 
-- Integrated payment system (Stripe)
-- Real-time inventory management
-- Analytics admin dashboard
-- Product search and filters
-- Mobile-first responsive design
+## Server-owned state
 
-## Tech Stack
+JWT authentication and an admin role guard the sensitive endpoints. Product mutations, inventory adjustments, order status changes, and analytics are restricted to admins. Reservation uses conditional updates on available stock inside a MongoDB transaction, and every adjustment is recorded as an append-only stock movement. Webhook event IDs are stored with a processing state so duplicate deliveries cannot mutate an order twice.
 
-- **Frontend:** React, Redux, Tailwind CSS
-- **Backend:** Node.js, Express
-- **Database:** MongoDB
-- **Payment:** Stripe API
+## Operations and limitations
+
+Docker Compose runs the frontend, API, and a single-node MongoDB replica set with healthchecks and a persistent volume. The repository includes Jest integration tests, Vitest component tests, seed data, architecture and API documentation, and desktop and mobile screenshots. Checkout requires Stripe test keys and webhook forwarding, so no hosted demo is linked; the screenshots use synthetic seed data.

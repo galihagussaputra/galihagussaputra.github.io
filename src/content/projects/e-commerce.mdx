@@ -1,32 +1,86 @@
 ---
 title: 'E-Commerce Platform'
-description: 'Platform e-commerce lengkap dengan sistem pembayaran, manajemen inventory, dan dashboard admin.'
+description: 'Storefront dan konsol admin full-stack dengan checkout yang dikendalikan server, reservasi stok transaksional, dan pembayaran Stripe bertanda tangan.'
 icon: 'fa-solid fa-cart-shopping'
-tags: ['React', 'Node.js', 'MongoDB', 'Stripe']
-liveUrl: 'https://example.com'
-githubUrl: 'https://github.com'
+category: 'Platform e-commerce'
+period: '2025–2026'
+tags: ['React 19', 'Redux Toolkit', 'Express 5', 'MongoDB 8', 'Stripe', 'Docker']
+githubUrl: 'https://github.com/galihagussaputra/e-commerce-platform'
 featured: true
-status: 'in-progress'
+status: 'completed'
 order: 1
-pubDate: 2025-06-15
+pubDate: 2025-12-01
+problem: 'Repositori ini berisi konsep storefront, tetapi build frontend tidak berjalan dan backend baru mencapai tahap awal routing. Harga, stok, keranjang, dan status pembayaran memerlukan satu alur yang dimiliki server agar tetap konsisten saat checkout bersamaan atau pembayaran gagal.'
+contribution: 'Mengaudit repositori yang ada, membangun ulang API menjadi layanan Express berlapis, mengganti frontend CRA yang tidak dapat dipakai dengan Vite dan React, lalu mengimplementasikan storefront, keranjang, checkout, webhook Stripe, konsol admin, tumpukan Docker, pengujian, dan dokumentasi.'
+implementation: 'API Express memisahkan route, validator, middleware, controller, service, dan model Mongoose. Autentikasi memakai JWT dengan pemeriksaan peran admin, sedangkan klien React menyimpan sesi, memulihkannya lewat /api/auth/me, dan memakai Redux Toolkit serta route guard. Checkout hanya menerima ID produk dan jumlah; server memuat ulang harga, menghitung ongkos kirim dan pajak, membuat pesanan, lalu mereservasi stok dengan pembaruan bersyarat di dalam transaksi MongoDB replica set. Webhook Stripe memverifikasi tanda tangan dari body mentah, menyimpan ID event sebelum mutasi, dan menangani pembayaran terlambat atau gagal secara idempoten.'
+improvements: 'Basis awal dilengkapi end to end: katalog dan pencarian, keranjang tamu dan server, sesi JWT, Stripe Checkout, siklus pesanan, analitik agregasi, CRUD produk, penyesuaian dan pergerakan stok, serta Docker Compose dengan replica set. Audit lanjutan memperbaiki invalidasi sesi, retry pembayaran, pencegahan oversell, pemulihan keranjang, dan pengalihan admin setelah login. Pengujian Jest dan Vitest, dokumentasi arsitektur, serta tangkapan layar desktop dan mobile turut ditambahkan.'
+challenges: 'Stok tidak boleh oversell ketika dua checkout mereservasi unit yang sama, sehingga reservasi memakai pembaruan kondisional atomik di dalam transaksi. Stripe dapat mengirim event duplikat atau terlambat, jadi ID event diklaim sebelum mutasi, nominal divalidasi, dan pembayaran terlambat dikembalikan secara idempoten. Pemulihan keranjang setelah sesi gagal juga harus menghindari pelepasan stok dua kali.'
+features:
+  - 'Storefront responsif dengan pencarian, filter kategori dan harga, pengurutan, pagination, serta detail produk'
+  - 'Keranjang tamu di Redux yang disinkronkan ke keranjang server setelah login dengan total dihitung server'
+  - 'Akun dengan registrasi, pemulihan sesi JWT, profil, ubah kata sandi, dan beberapa alamat'
+  - 'Stripe Checkout dengan harga dari server, reservasi stok, pembatalan, dan riwayat pesanan'
+  - 'Konsol admin untuk produk, penyesuaian dan pergerakan stok, stok rendah, pesanan, dan analitik'
+  - 'Tumpukan Docker Compose dengan replica set MongoDB, healthcheck, rate limit, dan header keamanan'
+  - 'Webhook Stripe bertanda tangan dan idempoten yang menyelesaikan pembayaran serta mengembalikan stok saat gagal'
+image: '/images/projects/e-commerce-platform/ecommerce-home.webp'
+imageAlt: 'Halaman utama storefront E-Commerce Platform dengan produk unggulan dan navigasi kategori'
+imageWidth: 1200
+imageHeight: 833
+screenshots:
+  - src: '/images/projects/e-commerce-platform/ecommerce-catalog.webp'
+    alt: 'Katalog storefront dengan filter kategori, rentang harga, pengurutan, dan grid produk'
+    caption: 'Katalog dengan filter, pengurutan, dan pagination.'
+    width: 1200
+    height: 833
+  - src: '/images/projects/e-commerce-platform/ecommerce-product.webp'
+    alt: 'Halaman detail produk dengan galeri, harga, stok, jumlah, dan aksi tambah ke keranjang'
+    caption: 'Detail produk dengan harga dan stok dari server.'
+    width: 1200
+    height: 833
+  - src: '/images/projects/e-commerce-platform/ecommerce-cart.webp'
+    alt: 'Keranjang belanja dengan item, jumlah, total, dan aksi checkout'
+    caption: 'Total keranjang dihitung di server.'
+    width: 1200
+    height: 833
+  - src: '/images/projects/e-commerce-platform/ecommerce-admin-dashboard.webp'
+    alt: 'Ringkasan admin dengan KPI pendapatan, tren penjualan, stok rendah, produk terlaris, dan pesanan terbaru'
+    caption: 'Ringkasan admin dari data pesanan nyata.'
+    width: 1200
+    height: 872
+  - src: '/images/projects/e-commerce-platform/ecommerce-admin-products.webp'
+    alt: 'Tabel produk admin dengan kategori, harga, stok, dan aksi edit'
+    caption: 'Pengelolaan produk dengan form tambah dan edit.'
+    width: 1200
+    height: 1288
+  - src: '/images/projects/e-commerce-platform/ecommerce-admin-inventory.webp'
+    alt: 'Layar inventaris admin dengan total stok, form penyesuaian, dan tabel stok produk'
+    caption: 'Total inventaris, penyesuaian, dan tingkat stok.'
+    width: 1200
+    height: 1574
+  - src: '/images/projects/e-commerce-platform/ecommerce-admin-orders.webp'
+    alt: 'Tabel pesanan admin dengan filter status dan aksi pesanan'
+    caption: 'Daftar pesanan dengan perubahan status dan pembatalan.'
+    width: 1200
+    height: 750
+  - src: '/images/projects/e-commerce-platform/ecommerce-admin-analytics.webp'
+    alt: 'Analitik admin dengan rentang tanggal, ringkasan pendapatan, tabel penjualan, dan posisi inventaris'
+    caption: 'Analitik dari pipeline agregasi MongoDB.'
+    width: 1200
+    height: 1066
 lang: 'id'
 translationKey: 'e-commerce'
 routeSlug: 'e-commerce'
 ---
 
-Platform e-commerce lengkap yang dibangun dengan fokus pada user experience dan performa.
+## Alur belanja
 
-## Fitur Utama
+Storefront membaca katalog dari API dan menyimpan filter pada URL. Keranjang tamu berada di Redux; setelah login, isinya disinkronkan ke keranjang server. Checkout hanya mengirim ID produk dan jumlah. API memuat ulang harga, menghitung ongkos kirim dan pajak, membuat pesanan berstatus menunggu pembayaran, mereservasi stok secara atomik, lalu mengarahkan browser ke Stripe Checkout. Webhook bertanda tangan menyelesaikan pesanan, sementara pembatalan dan kedaluwarsa melepaskan reservasi satu kali dan mengembalikan keranjang.
 
-- Sistem pembayaran terintegrasi (Stripe)
-- Manajemen inventory real-time
-- Dashboard admin analitik
-- Search & filter produk
-- Responsive design mobile-first
+## Status yang dimiliki server
 
-## Tech Stack
+Autentikasi JWT dan peran admin menjaga endpoint sensitif. Perubahan produk, penyesuaian inventaris, status pesanan, dan analitik hanya tersedia untuk admin. Reservasi memakai pembaruan bersyarat pada stok tersedia di dalam transaksi MongoDB, dan setiap penyesuaian tercatat sebagai pergerakan stok yang hanya bisa ditambah. ID event webhook disimpan dengan status pemrosesan sehingga pengiriman duplikat tidak dapat mengubah pesanan dua kali.
 
-- **Frontend:** React, Redux, Tailwind CSS
-- **Backend:** Node.js, Express
-- **Database:** MongoDB
-- **Payment:** Stripe API
+## Operasional dan batasan
+
+Docker Compose menjalankan frontend, API, dan MongoDB single-node replica set dengan healthcheck serta volume persisten. Repositori menyertakan pengujian integrasi Jest, pengujian komponen Vitest, data seed, dokumentasi arsitektur dan API, serta tangkapan layar desktop dan mobile. Checkout memerlukan kunci uji Stripe dan penerusan webhook, sehingga tidak ada demo daring yang ditautkan; tangkapan layar memakai data seed sintetis.

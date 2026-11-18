@@ -65,7 +65,8 @@ The development server runs at <http://localhost:4321>.
 ├── public/
 │   ├── images/projects/
 │   │   ├── moviestream/
-│   │   └── erp-construction-services/
+│   │   ├── erp-construction-services/
+│   │   └── e-commerce-platform/
 │   ├── favicon.svg
 │   └── robots.txt
 ├── src/
@@ -205,7 +206,7 @@ routeSlug: 'project-name'
 
 The page view renders the project title, metadata, case-study fields, and any screenshots listed in `screenshots`. The MDX body is for the longer write-up.
 
-MovieStream and ERP Construction Services use real repository URLs and optimized WebP captures from their source repositories, stored under `public/images/projects/moviestream/` and `public/images/projects/erp-construction-services/`. The original three entries still use placeholder links; replace them with real URLs when those projects are published.
+MovieStream, ERP Construction Services, and E-Commerce Platform use real repository URLs and optimized WebP captures from their source repositories, stored under `public/images/projects/moviestream/`, `public/images/projects/erp-construction-services/`, and `public/images/projects/e-commerce-platform/`. The remaining dashboard and task-app entries still use placeholder links; replace them with real URLs when those projects are published.
 
 Screenshot entries support `src`, `alt`, `caption`, `width`, `height`, and an optional `wide` flag for a full-width gallery item.
 
@@ -330,6 +331,8 @@ Check both locales for the main routes:
 /id/projects/moviestream/
 /projects/erp-construction-services/
 /id/projects/erp-construction-services/
+/projects/e-commerce/
+/id/projects/e-commerce/
 /blog/
 /id/blog/
 /contact/

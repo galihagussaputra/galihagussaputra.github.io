@@ -1,6 +1,6 @@
 # Portfolio project integration log
 
-Working document for adding MovieStream and ERP Construction Services to the Astro portfolio.
+Working document for adding MovieStream, ERP Construction Services, and E-Commerce Platform to the Astro portfolio.
 
 ## Phase 1 — Initial inspection
 
@@ -123,3 +123,35 @@ Login, admin-only, customer-detail, employee-detail, and receipt captures were i
 - Screenshots could not be visually rendered in this environment; selection was based on screenshot filenames, source documentation, capture scripts, and the synthetic demo seeder. Captures showing login forms, admin account data, customer contacts, employee records, and receipts were excluded to reduce exposure risk.
 - The original three project entries still contain their pre-existing placeholder links and in-progress status; they were left unchanged as requested.
 - Responsive behaviour was validated through CSS review and built-output checks, not through a headless browser at 1920/1366/768/390px.
+
+## Phase 6 — E-Commerce Platform integration (2026-11-18)
+
+### Source verification
+
+- Portfolio remote: `https://github.com/galihagussaputra/galihagussaputra.github.io.git`, branch `main`.
+- E-Commerce remote: `https://github.com/galihagussaputra/e-commerce-platform.git`, branch `main`, clean working tree.
+- Repository `created_at` from the GitHub API: `2025-12-01T09:41:36Z`. This date, not the first commit date, is used as `pubDate` in both locales.
+- Source docs reviewed: `README.md`, `docs/architecture.md`, `docs/implementation-log.md`, `docs/admin-visual-qa.md`, both package manifests, routes, services, and the screenshot inventory.
+
+### Content changes
+
+- Replaced the placeholder E-Commerce entries in `src/content/projects/e-commerce.mdx` and `e-commerce-en.mdx` with verified stack, repository URL, category, period, case-study fields, features, technical decisions, and localized MDX write-ups.
+- Removed the `https://example.com` live URL because the source repository has no hosted demo; checkout needs Stripe test keys and webhook forwarding.
+- Kept `translationKey: 'e-commerce'` and `routeSlug: 'e-commerce'` so the existing routes and language switcher continue to pair the locales.
+- Set `status: 'completed'` and `pubDate: 2025-12-01`.
+
+### Screenshots
+
+Copied nine source captures from `docs/screenshots/` and `docs/screenshots/admin/` into `public/images/projects/e-commerce-platform/` as WebP, resized to 1200px wide with the existing `sharp` installation. Source PNG files were left untouched.
+
+- Public: `ecommerce-home.webp`, `ecommerce-catalog.webp`, `ecommerce-product.webp`, `ecommerce-cart.webp`.
+- Admin: `ecommerce-admin-dashboard.webp`, `ecommerce-admin-products.webp`, `ecommerce-admin-inventory.webp`, `ecommerce-admin-orders.webp`, `ecommerce-admin-analytics.webp`.
+- Admin captures were requested explicitly and come from the synthetic seed data documented in `docs/admin-visual-qa.md`; no credentials or tokens are shown.
+
+### Verification
+
+- `npm run build`: passed.
+- Built HTML checked for both `/projects/e-commerce/` and `/id/projects/e-commerce/`, including the `1 Dec 2025` / `1 Des 2025` dates, repository link, and localized screenshot captions.
+- All referenced WebP assets exist in `dist/` and return valid dimensions.
+- Portfolio `git status` and E-Commerce `git status` checked after implementation.
+- No commit or push was performed.
