@@ -1,31 +1,191 @@
 ---
 title: 'Task Management App'
-description: 'A task management application with real-time collaboration, notifications, and progress tracking.'
+description: 'Full-stack team workspace with Vue 3, Express, Socket.IO, and PostgreSQL: RBAC, room-isolated realtime collaboration, Kanban, Docker, and QA.'
 icon: 'fa-solid fa-list-check'
-tags: ['Vue.js', 'Express', 'Socket.io', 'PostgreSQL']
-liveUrl: 'https://example.com'
-githubUrl: 'https://github.com'
+category: 'Team collaboration app'
+period: '2025–2026'
+tags: ['Vue.js 3', 'Pinia', 'Express 5', 'Socket.IO', 'PostgreSQL', 'Docker']
+githubUrl: 'https://github.com/galihagussaputra/task-management-app'
 featured: true
-status: 'in-progress'
+status: 'completed'
 order: 2
-pubDate: 2025-03-10
+pubDate: 2025-11-18T12:00:00Z
+problem: 'Team work tends to fragment across chats, spreadsheets, and loose task lists, leaving no single view of who owns a task, what changed, or whether the rest of the team saw it. This application keeps projects, teams, tasks, comments, and notifications in one workspace, with the API deciding who can read or change each record.'
+contribution: 'Audited an incomplete prototype and repaired it in place rather than replacing the stack: completed six SQL migrations and a repeatable demo seed, built the REST API with layered authorization, added an authenticated Socket.IO layer, implemented the Vue workspace and Kanban board, dockerized the stack with Nginx proxying, and produced QA reports and eleven screenshots.'
+implementation: 'Express 5 exposes resource routes backed by controllers, models, and shared permission helpers. JWTs authenticate both REST and Socket.IO; middleware resolves global, project, and team roles before a controller runs, and task queries filter by project membership so outsiders cannot read or mutate another project. Six numbered migrations create the relational schema and a rerunnable seed; the backend container applies them before starting the API. Pinia stores coordinate the Vue 3 interface, including optimistic Kanban moves with rollback. Socket.IO verifies the handshake token, joins users to their own room and to rooms for projects they belong to, and emits scoped task, comment, presence, and notification events. Nginx serves the built SPA and proxies /api and /socket.io to the backend.'
+improvements: 'The initial audit found a client importing server-only database code, an unregistered router and store, an empty validation middleware, a deliberately failing test script, interpolated SQL, inconsistent socket event names, and invalid Compose keys. Each was fixed inside the existing folders. Later commits made migrations idempotent, added project and team roles, completed the workspace UI, moved socket listeners to the application shell so they survive reconnects, added GET /api/tasks/:id for the task modal, corrected room synchronization on membership changes, fixed the Nginx runtime user, repositioned the mobile notification panel, and removed thousands of tracked dependency files from Git.'
+challenges: 'The hardest part was making realtime access follow the same rules as REST: rooms are derived from project membership, refreshed when membership changes, and admins are joined explicitly. Nginx initially failed to start as an unprivileged user because it could not create its cache directories, and host ports 5000 and 8080 were occupied during QA, so verification used 5001 and 8081. The mobile notification panel also overflowed the viewport and was repositioned below the header on small screens.'
+features:
+  - 'Authentication and authorization: registration, login, bcrypt password hashes, JWT sessions, and global admin/manager/member roles checked before protected endpoints run'
+  - 'Dashboard with a project selector, progress and task summary cards, status and priority filters, and a Board/List toggle'
+  - 'Project and team management with member lists, role selection, and membership-based access isolation'
+  - 'Tasks with assignment, tags, priority, due dates, progress, status, comments, and a single-task detail view'
+  - 'Kanban board with native drag-and-drop across To Do, In Progress, and Completed, plus a list view; status changes persist through the API with optimistic rollback'
+  - 'Real-time collaboration over authenticated Socket.IO connections using user and project rooms, presence, task, comment, and notification events'
+  - 'In-app notification panel with unread count, per-item mark as read, and mark all read'
+  - 'Repeatable setup through six SQL migrations, a seeded demo dataset, and a three-service Docker Compose stack with health-gated startup'
+image: '/images/projects/task-app/taskflow-dashboard.webp'
+imageAlt: 'Task Management App dashboard with project summary cards, filters, and a three-column Kanban board of seeded tasks'
+imageWidth: 1200
+imageHeight: 750
+screenshots:
+  - src: '/images/projects/task-app/taskflow-login.webp'
+    alt: 'Split-screen login page with sign in and create account tabs and a demo account card'
+    caption: 'Login screen with the seeded demo accounts.'
+    width: 1200
+    height: 750
+  - src: '/images/projects/task-app/taskflow-projects.webp'
+    alt: 'Projects page showing a seeded project card and its current members and add-member controls'
+    caption: 'Projects with member management and role selection.'
+    width: 1200
+    height: 750
+  - src: '/images/projects/task-app/taskflow-teams.webp'
+    alt: 'Teams page with team cards, a selected seeded team, and its member controls'
+    caption: 'Team management with seeded members.'
+    width: 1200
+    height: 750
+  - src: '/images/projects/task-app/taskflow-notifications.webp'
+    alt: 'Notification panel open on the dashboard with an unread count, mark all read, and individual mark as read actions'
+    caption: 'Notification panel with unread and read interactions.'
+    width: 1200
+    height: 750
+  - src: '/images/projects/task-app/taskflow-project-detail.webp'
+    alt: 'Expanded detail panel for the seeded Demo Project showing current members and add-member controls'
+    caption: 'Project detail with the member panel expanded.'
+    width: 1200
+    height: 887
+  - src: '/images/projects/task-app/taskflow-task-detail.webp'
+    alt: 'Task detail modal for the seeded Design landing page task with status, priority, progress, assignees, and tags'
+    caption: 'Task detail loaded through the single-task endpoint.'
+    width: 1200
+    height: 750
+  - src: '/images/projects/task-app/taskflow-task-comments.webp'
+    alt: 'Task detail modal focused on comments with the seeded Initial review completed comment and a comment field'
+    caption: 'Comments on a task, including the seeded review note.'
+    width: 1200
+    height: 750
+  - src: '/images/projects/task-app/taskflow-task-assignment.webp'
+    alt: 'Task detail modal with the assignee checkbox list open and the seeded Demo User selected'
+    caption: 'Assignee selection on a task.'
+    width: 1200
+    height: 750
+  - src: '/images/projects/task-app/taskflow-mobile-dashboard.webp'
+    alt: 'Full-page mobile dashboard at 390 pixels wide with stacked summary cards, filters, and Kanban columns'
+    caption: 'Full-page mobile dashboard captured at 390 px.'
+    width: 390
+    height: 2940
+    portrait: true
+  - src: '/images/projects/task-app/taskflow-mobile-kanban.webp'
+    alt: 'Full-page mobile Kanban board with To Do, In Progress, and Completed columns stacked vertically'
+    caption: 'Kanban columns stacked at mobile width.'
+    width: 358
+    height: 2239
+    portrait: true
 lang: 'en'
 translationKey: 'task-app'
 routeSlug: 'task-app'
 ---
 
-A task management application with real-time collaboration.
+## Project introduction
 
-## Main Features
+Task Management App is a full-stack workspace for small teams that need to follow work from a rough idea to a completed task without losing the context around it. A project holds the team, its members, and a board of tasks; each task carries an owner or assignees, priority, due date, progress, status, tags, and a comment thread. Changes surface as in-app notifications and as live updates in the boards of other signed-in users.
 
-- Real-time team collaboration (Socket.io)
-- Push and in-app notifications
-- Progress tracking system
-- Drag-and-drop kanban board
-- Task assignment and deadlines
+The intended scenario is deliberately ordinary: a manager creates a project, adds teammates, breaks the work into tasks, and watches the board move from To Do through In Progress to Completed. A teammate opens the same project on another device, picks up an assignment, leaves a comment, and sees the resulting notification without reloading. Nothing here requires a deployment pipeline or a payment system; the interesting part is the agreement between the API, the database, and the realtime layer about what each user is allowed to see.
 
-## Tech Stack
+That agreement is what makes the implementation worth documenting. The repository began as a partially broken prototype with a server-only import in the client, unregistered Vue plugins, unsafe SQL, and empty middleware. It was repaired in place, keeping the original `client/`, `server/`, and `database/` layout, and grew into a system with explicit roles, repeatable migrations, an authenticated socket layer, and a container workflow with health-gated startup.
 
-- **Frontend:** Vue.js, Pinia
-- **Backend:** Express, Socket.io
-- **Database:** PostgreSQL
+## Architecture and data flow
+
+The browser runs a Vue 3 single-page application. It reads and writes through a REST API under `/api`; a separate Socket.IO connection carries live events back to the browser. The backend is the only component that talks to PostgreSQL, and Nginx is the only public entry point in the container stack.
+
+```text
+                        Docker Compose runtime
+  +----------------------------------------------------------------------+
+  |  frontend (Nginx :8080)       backend (Node/Express :5000)           |
+  |    /api/* --------proxy----->  routes -> middleware -> controllers    |
+  |    /socket.io/ -proxy----->   Socket.IO server + room registry        |
+  |                                     | parameterized SQL              |
+  |                                     v                                |
+  |                              postgres (PostgreSQL 15)                |
+  +----------------------------------------------------------------------+
+          ^                                      ^
+          | REST responses + realtime events     | internal network only
+          |                                      |
+   +----------------------+              (no direct browser access)
+   | User browser         |
+   | Vue 3 SPA + Pinia    |
+   +----------------------+
+```
+
+On startup, Compose waits for PostgreSQL to report healthy, then for the backend health check to pass, then starts the frontend. The backend container applies migrations before launching the API. Nginx serves the built SPA, falls back to `index.html` for client-side routes, and proxies both `/api/` and `/socket.io/` (with WebSocket upgrade headers) to the backend service. There is no separate cache, queue, or external service in the stack.
+
+## Technology stack
+
+Versions below are the resolved versions in the repository lockfiles, not loose manifest ranges.
+
+| Layer | Technology | Responsibility |
+| --- | --- | --- |
+| Frontend | Vue.js 3 (`3.5.24`) | Reactive user interface, router guards, Kanban interactions |
+| State management | Pinia (`3.0.4`) | Shared auth, task, project, team, notification, and presence state |
+| Backend | Node.js / Express 5 (`5.1.0`) | REST API, validation, business logic, authorization |
+| Real-time | Socket.IO (`4.8.1`) | Authenticated rooms, presence, task and notification events |
+| Database | PostgreSQL 15, `pg` (`8.16.3`) | Relational persistence through numbered SQL migrations |
+| Infrastructure | Docker Compose, Nginx `1.27-alpine` | Container runtime, health-gated startup, SPA serving and API proxy |
+
+Supporting libraries include `vue-router` (`4.6.3`), Axios (`1.13.2`), and Tailwind CSS (`3.4.18`) on the client, and `jsonwebtoken` (`9.0.2`), `bcryptjs` (`3.0.3`), and `express-validator` (`7.3.0`) on the server.
+
+## Implementation notes
+
+### Migrations and repeatable setup
+
+Six numbered SQL files build the schema in order: users, tasks and tags, comments, notifications, then the extended schema that adds teams, projects, and the three role enums. A final seed file inserts three demo accounts, a team, a project, memberships, three tasks, tags, a comment, and notifications. The runner tracks applied files in `schema_migrations` and wraps each file in a transaction. Table creation uses `IF NOT EXISTS`, column additions use `ADD COLUMN IF NOT EXISTS`, and the seed uses `ON CONFLICT DO NOTHING`, so a fresh container and a restart converge on the same state.
+
+### Validation, authorization, and isolation
+
+Express-validator rules cover authentication, tasks, projects, teams, members, comments, and IDs; invalid input returns a structured 400 response. All dynamic values in SQL are parameters. Three layers of authorization are resolved before controllers run: a global role (`admin`, `manager`, `member`), a project or team role (`owner`, `manager`, `member`), and assignee status for task updates. The task list query admits admins, unassigned tasks created by the caller, and tasks in projects where the caller has a membership row. Resource isolation was verified with an outsider account whose reads and writes returned 403. Task filtering and search are available; pagination is not implemented.
+
+### Kanban persistence
+
+The three columns map to the `todo`, `in-progress`, and `completed` enum values. Cards are draggable with native HTML5 drag-and-drop and remain keyboard accessible. A move updates the Pinia store immediately, sends the new status and position to `PATCH /api/tasks/:id/status`, and restores the previous status if the request fails. Completion also sets progress to 100. Validation checks that a status is a member of the enum, so any valid status can currently be set from any other status.
+
+### Realtime boundaries
+
+The socket handshake verifies the same JWT used by REST and loads the user from the database. Each connection joins `user:<id>` and the rooms of projects where the user has a membership; admins join every project room. Membership changes call a synchronization helper that joins or leaves the affected sockets. Task, comment, and progress events are emitted to project rooms, while notifications target `user:<id>` rooms. Listeners for the main events live in `App.vue` so they survive reconnects, and the Axios interceptor disconnects the socket and clears the session on a 401.
+
+### Container workflow
+
+Three services use environment-driven host ports. The backend image installs production dependencies only, runs as a non-root user, and starts with `npm run migrate && npm start`. The frontend is a two-stage build that copies the Vite output into Nginx. Health checks gate startup order, and a root-level `.dockerignore` keeps installed dependencies out of both build contexts.
+
+## Verification and QA
+
+The QA documents record the following results for the final acceptance pass:
+
+- Backend: 16 tests, 0 failures, using Node's built-in test runner.
+- Frontend: production build succeeded with 140 modules transformed.
+- Containers: `postgres`, `backend`, and `frontend` all healthy; Compose configuration valid.
+- API and realtime: REST behavior, authorization, and resource isolation passed; two-account testing confirmed task creation, task updates, comments, and notification delivery without a refresh.
+- Browser and responsive: CRUD and notification flows passed at 1440 × 900, 768 × 1024, and 390 × 844, with no reported overflow.
+- Source checks: source-scoped `git diff --check` clean; eleven valid screenshot files verified against the running application.
+
+These are documented results for a local evaluation stack, not evidence that every production scenario has been exercised. Host ports 5000 and 8080 were occupied on the QA machine, so verification used 5001 and 8081. The detailed report was written at commit `974d4b7`; the current local head adds a dependency-hygiene commit. No hosted demo is linked, and the screenshots use seeded demo data.
+
+## Challenges and engineering decisions
+
+- **Repair in place.** The audit found a client that imported server-only database code, an unregistered router and Pinia, an empty validation middleware, a test script that always failed, interpolated SQL, mismatched socket names, and invalid Compose keys. The decision was to fix each defect inside the existing folder structure instead of replacing the framework or moving top-level directories.
+- **Nginx runtime user.** Declaring `USER nginx` made Nginx fail with a permission error when it tried to create `/var/cache/nginx/client_temp`. The image now lets the official Nginx entrypoint start its master process as root while workers remain unprivileged.
+- **Realtime authorization.** A socket is not trusted just because it connected. Rooms are derived from membership queries, refreshed when membership changes, and explicitly include admins; events are then addressed to those rooms rather than broadcast globally.
+- **Port conflicts during QA.** The configured host ports were already in use. Environment variables for `BACKEND_PORT` and `FRONTEND_PORT` let the same Compose file be verified on 5001 and 8081 without editing committed configuration.
+- **Mobile notification panel.** The panel was originally anchored to the bell and extended off-screen at phone widths. It is now centered below the header on small screens and anchored to the button from the `md` breakpoint upward.
+- **Reliable browser assertions.** An early QA assertion checked notifications using the admin account, which has no seeded notifications. Switching to the demo account made the check meaningful, and DOM assertions were added for states such as `Current members` and `Initial review completed`.
+
+## Scope and limitations
+
+The following are explicitly not implemented: project archiving, team update and delete endpoints, notification mark-as-unread, constrained status transitions, restricting assignees to project or team members, task title and description editing in the UI, and pagination. Registration, the typing indicator, and the project progress socket event are implemented but were not fully verified end to end in the final browser matrix.
+
+There is no lint or typecheck script, no CI/CD pipeline, no production monitoring or backup strategy, and no deployment hardening beyond the documented container setup. JWTs have no refresh rotation or revocation list, there is no rate limiting or account lockout, and PostgreSQL port 5432 is still published for local development. Demo passwords are for local evaluation only. These are candidates for future work, not completed features; a production deployment would need its own security and operations review.
+
+## Closing notes
+
+The project demonstrates a full-stack application assembled from an imperfect starting point into something coherent: a relational model with explicit roles, a REST API that owns access decisions, a realtime layer that mirrors those decisions with rooms, and a container stack that starts in a predictable order. The most useful lesson was that realtime authorization cannot be an afterthought — it has to reuse the same membership rules as the API, including when memberships change.
+
+The current state is a completed, QA-documented local application with seeded demo data and a repository, not a hosted or hardened production service. It is presented here as a technical case study of implementation, verification, and the engineering choices behind them.

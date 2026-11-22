@@ -1,31 +1,191 @@
 ---
 title: 'Task Management App'
-description: 'Aplikasi manajemen tugas dengan fitur kolaborasi real-time, notifikasi, dan sistem tracking progress.'
+description: 'Ruang kerja tim full-stack dengan Vue 3, Express, Socket.IO, dan PostgreSQL: RBAC, kolaborasi real-time terisolasi, Kanban, Docker, dan QA.'
 icon: 'fa-solid fa-list-check'
-tags: ['Vue.js', 'Express', 'Socket.io', 'PostgreSQL']
-liveUrl: 'https://example.com'
-githubUrl: 'https://github.com'
+category: 'Aplikasi kolaborasi tim'
+period: '2025–2026'
+tags: ['Vue.js 3', 'Pinia', 'Express 5', 'Socket.IO', 'PostgreSQL', 'Docker']
+githubUrl: 'https://github.com/galihagussaputra/task-management-app'
 featured: true
-status: 'in-progress'
+status: 'completed'
 order: 2
-pubDate: 2025-03-10
+pubDate: 2025-11-18T12:00:00Z
+problem: 'Pekerjaan tim biasanya terpecah di chat, spreadsheet, dan daftar tugas yang longgar, sehingga tidak ada satu tampilan pun yang menjelaskan siapa pemilik tugas, apa yang berubah, dan apakah anggota lain melihatnya. Aplikasi ini mengumpulkan proyek, tim, tugas, komentar, dan notifikasi dalam satu ruang kerja, dengan API yang menentukan siapa boleh membaca atau mengubah setiap data.'
+contribution: 'Mengaudit prototipe yang belum selesai lalu memperbaikinya di tempat, bukan mengganti tumpukan teknologi: menyelesaikan enam migrasi SQL dan seed data yang dapat diulang, membangun REST API dengan otorisasi berlapis, menambahkan lapisan Socket.IO terautentikasi, mengimplementasikan ruang kerja Vue dan papan Kanban, mendockerisasi tumpukan dengan proxy Nginx, serta menyusun laporan QA dan sebelas tangkapan layar.'
+implementation: 'Express 5 menyediakan route resource yang didukung controller, model, dan helper izin bersama. JWT mengautentikasi REST maupun Socket.IO; middleware menyelesaikan peran global, proyek, dan tim sebelum controller berjalan, sedangkan query tugas difilter berdasarkan keanggotaan proyek agar pihak luar tidak dapat membaca atau mengubah proyek lain. Enam migrasi bernomor membentuk skema relasional dan seed yang bisa dijalankan ulang; container backend menerapkannya sebelum API dimulai. Pinia menyinkronkan antarmuka Vue 3, termasuk pemindahan Kanban optimistik dengan rollback. Socket.IO memverifikasi token saat handshake, menggabungkan pengguna ke room mereka sendiri dan room proyek yang mereka ikuti, lalu memancarkan event tugas, komentar, kehadiran, dan notifikasi yang terarah. Nginx melayani SPA hasil build dan mem-proxy /api serta /socket.io ke backend.'
+improvements: 'Audit awal menemukan klien yang mengimpor kode database khusus server, router dan store yang tidak didaftarkan, middleware validasi kosong, skrip pengujian yang sengaja gagal, SQL interpolasi, nama event socket yang tidak konsisten, dan kunci Compose yang tidak valid. Semuanya diperbaiki di dalam folder yang sudah ada. Commit berikutnya membuat migrasi idempoten, menambahkan peran proyek dan tim, melengkapi antarmuka ruang kerja, memindahkan listener socket ke shell aplikasi agar bertahan setelah reconnect, menambahkan GET /api/tasks/:id untuk modal tugas, memperbaiki sinkronisasi room saat keanggotaan berubah, memperbaiki user runtime Nginx, menyesuaikan posisi panel notifikasi di mobile, serta menghapus ribuan file dependensi yang terlacak di Git.'
+challenges: 'Bagian tersulit adalah membuat akses real-time mengikuti aturan yang sama dengan REST: room berasal dari keanggotaan proyek, diperbarui saat keanggotaan berubah, dan admin digabungkan secara eksplisit. Nginx awalnya gagal berjalan sebagai pengguna non-root karena tidak dapat membuat direktori cache, dan port host 5000 serta 8080 sedang terpakai saat QA, sehingga verifikasi memakai 5001 dan 8081. Panel notifikasi di mobile juga keluar dari viewport lalu diposisikan ulang di bawah header pada layar kecil.'
+features:
+  - 'Autentikasi dan otorisasi: registrasi, login, hash kata sandi bcrypt, sesi JWT, serta peran global admin/manager/member yang diperiksa sebelum endpoint terlindungi dijalankan'
+  - 'Dashboard dengan pemilih proyek, kartu ringkasan progres dan tugas, filter status dan prioritas, serta tombol Board/List'
+  - 'Manajemen proyek dan tim dengan daftar anggota, pemilihan peran, dan isolasi akses berdasarkan keanggotaan proyek'
+  - 'Tugas dengan penerima tugas, tag, prioritas, tenggat, progres, status, komentar, dan tampilan detail per tugas'
+  - 'Papan Kanban dengan drag-and-drop bawaan untuk To Do, In Progress, dan Completed, serta tampilan daftar; perubahan status tersimpan lewat API dengan rollback optimistik'
+  - 'Kolaborasi real-time lewat koneksi Socket.IO terautentikasi menggunakan room pengguna dan proyek, event kehadiran, tugas, komentar, dan notifikasi'
+  - 'Panel notifikasi dalam aplikasi dengan jumlah belum dibaca, tandai satu sebagai dibaca, dan tandai semua sebagai dibaca'
+  - 'Setup yang dapat diulang lewat enam migrasi SQL, data demo seed, dan tumpukan Docker Compose tiga layanan dengan startup berbasis health check'
+image: '/images/projects/task-app/taskflow-dashboard.webp'
+imageAlt: 'Dashboard Task Management App dengan kartu ringkasan proyek, filter, dan papan Kanban tiga kolom berisi tugas demo'
+imageWidth: 1200
+imageHeight: 750
+screenshots:
+  - src: '/images/projects/task-app/taskflow-login.webp'
+    alt: 'Halaman login dua kolom dengan tab sign in dan create account serta kartu akun demo'
+    caption: 'Halaman login dengan akun demo dari seed data.'
+    width: 1200
+    height: 750
+  - src: '/images/projects/task-app/taskflow-projects.webp'
+    alt: 'Halaman proyek dengan kartu proyek demo, daftar anggota saat ini, dan kontrol tambah anggota'
+    caption: 'Proyek dengan manajemen anggota dan pemilihan peran.'
+    width: 1200
+    height: 750
+  - src: '/images/projects/task-app/taskflow-teams.webp'
+    alt: 'Halaman tim dengan kartu tim, tim demo yang dipilih, dan kontrol keanggotaannya'
+    caption: 'Manajemen tim dengan anggota dari seed data.'
+    width: 1200
+    height: 750
+  - src: '/images/projects/task-app/taskflow-notifications.webp'
+    alt: 'Panel notifikasi terbuka di dashboard dengan jumlah belum dibaca, tandai semua dibaca, dan aksi tandai dibaca per item'
+    caption: 'Panel notifikasi dengan interaksi baca dan belum dibaca.'
+    width: 1200
+    height: 750
+  - src: '/images/projects/task-app/taskflow-project-detail.webp'
+    alt: 'Panel detail proyek demo yang diperluas dengan daftar anggota dan kontrol tambah anggota'
+    caption: 'Detail proyek dengan panel anggota yang dibuka.'
+    width: 1200
+    height: 887
+  - src: '/images/projects/task-app/taskflow-task-detail.webp'
+    alt: 'Modal detail tugas Design landing page dengan status, prioritas, progres, penerima tugas, dan tag'
+    caption: 'Detail tugas yang dimuat lewat endpoint single-task.'
+    width: 1200
+    height: 750
+  - src: '/images/projects/task-app/taskflow-task-comments.webp'
+    alt: 'Modal detail tugas yang menampilkan bagian komentar dengan komentar seed Initial review completed dan kolom input'
+    caption: 'Komentar pada tugas, termasuk catatan review dari seed data.'
+    width: 1200
+    height: 750
+  - src: '/images/projects/task-app/taskflow-task-assignment.webp'
+    alt: 'Modal detail tugas dengan daftar checkbox penerima tugas dan Demo User yang dipilih'
+    caption: 'Pemilihan penerima tugas.'
+    width: 1200
+    height: 750
+  - src: '/images/projects/task-app/taskflow-mobile-dashboard.webp'
+    alt: 'Dashboard mobile seluruh halaman pada lebar 390 piksel dengan kartu ringkasan, filter, dan kolom Kanban bertumpuk'
+    caption: 'Dashboard mobile seluruh halaman pada lebar 390 px.'
+    width: 390
+    height: 2940
+    portrait: true
+  - src: '/images/projects/task-app/taskflow-mobile-kanban.webp'
+    alt: 'Papan Kanban mobile seluruh halaman dengan kolom To Do, In Progress, dan Completed tersusun vertikal'
+    caption: 'Kolom Kanban tersusun vertikal pada lebar mobile.'
+    width: 358
+    height: 2239
+    portrait: true
 lang: 'id'
 translationKey: 'task-app'
 routeSlug: 'task-app'
 ---
 
-Aplikasi manajemen tugas dengan kolaborasi real-time.
+## Pengenalan proyek
 
-## Fitur Utama
+Task Management App adalah ruang kerja full-stack untuk tim kecil yang ingin mengikuti pekerjaan dari ide awal hingga tugas selesai tanpa kehilangan konteks di sekitarnya. Sebuah proyek menampung tim, anggota, dan papan tugas. Setiap tugas memiliki penerima, prioritas, tenggat, progres, status, tag, dan utas komentar. Perubahan muncul sebagai notifikasi dalam aplikasi dan sebagai pembaruan langsung di papan pengguna lain yang sedang masuk.
 
-- Kolaborasi tim real-time (Socket.io)
-- Notifikasi push & in-app
-- Sistem tracking progress
-- Drag-and-drop kanban board
-- Assign task & deadline
+Skenario yang dituju sengaja sederhana: seorang manager membuat proyek, menambahkan rekan tim, memecah pekerjaan menjadi tugas, lalu memantau papan bergerak dari To Do ke In Progress dan Completed. Seorang anggota membuka proyek yang sama di perangkat lain, mengambil tugas, meninggalkan komentar, dan melihat notifikasi tanpa memuat ulang halaman. Tidak ada kebutuhan akan pipeline deployment atau sistem pembayaran di sini; bagian yang menarik adalah kesepakatan antara API, database, dan lapisan real-time tentang apa yang boleh dilihat dan diubah oleh setiap pengguna.
 
-## Tech Stack
+Kesepakatan itulah yang membuat implementasinya layak didokumentasikan. Repositori awalnya berupa prototipe yang sebagian rusak: ada impor kode server di klien, plugin Vue yang tidak didaftarkan, SQL yang tidak aman, dan middleware kosong. Prototipe ini diperbaiki di tempat dengan tetap mempertahankan struktur folder `client/`, `server/`, dan `database/`, lalu berkembang menjadi sistem dengan peran yang jelas, migrasi yang dapat diulang, lapisan socket terautentikasi, dan alur container dengan startup yang teratur.
 
-- **Frontend:** Vue.js, Pinia
-- **Backend:** Express, Socket.io
-- **Database:** PostgreSQL
+## Arsitektur dan alur data
+
+Browser menjalankan single-page application Vue 3. Aplikasi membaca dan menulis melalui REST API di bawah `/api`; koneksi Socket.IO terpisah membawa event langsung kembali ke browser. Backend adalah satu-satunya komponen yang berbicara dengan PostgreSQL, dan Nginx adalah satu-satunya pintu masuk publik dalam tumpukan container.
+
+```text
+                     Runtime Docker Compose
+  +----------------------------------------------------------------------+
+  |  frontend (Nginx :8080)       backend (Node/Express :5000)           |
+  |    /api/* --------proxy----->  routes -> middleware -> controllers    |
+  |    /socket.io/ -proxy----->   server Socket.IO + registry room        |
+  |                                     | SQL berparameter               |
+  |                                     v                                |
+  |                              postgres (PostgreSQL 15)                |
+  +----------------------------------------------------------------------+
+          ^                                      ^
+          | respons REST + event real-time       | jaringan internal saja
+          |                                      |
+   +----------------------+              (tidak diakses langsung browser)
+   | Browser pengguna     |
+   | Vue 3 SPA + Pinia    |
+   +----------------------+
+```
+
+Saat startup, Compose menunggu PostgreSQL sehat, lalu health check backend lolos, baru menjalankan frontend. Container backend menerapkan migrasi sebelum API dimulai. Nginx melayani SPA hasil build, melakukan fallback ke `index.html` untuk route sisi klien, dan mem-proxy `/api/` serta `/socket.io/` dengan header upgrade WebSocket ke layanan backend. Tidak ada cache, antrean, atau layanan eksternal lain dalam tumpukan ini.
+
+## Tumpukan teknologi
+
+Versi di bawah adalah versi yang terkunci di lockfile repositori, bukan rentang longgar dari manifest.
+
+| Lapisan | Teknologi | Tanggung jawab |
+| --- | --- | --- |
+| Frontend | Vue.js 3 (`3.5.24`) | Antarmuka reaktif, guard router, interaksi Kanban |
+| Manajemen state | Pinia (`3.0.4`) | State bersama untuk auth, tugas, proyek, tim, notifikasi, dan kehadiran |
+| Backend | Node.js / Express 5 (`5.1.0`) | REST API, validasi, logika bisnis, otorisasi |
+| Real-time | Socket.IO (`4.8.1`) | Room terautentikasi, kehadiran, event tugas dan notifikasi |
+| Database | PostgreSQL 15, `pg` (`8.16.3`) | Persistensi relasional lewat migrasi SQL bernomor |
+| Infrastruktur | Docker Compose, Nginx `1.27-alpine` | Runtime container, startup berbasis health check, serving SPA dan proxy API |
+
+Pustaka pendukung lainnya adalah `vue-router` (`4.6.3`), Axios (`1.13.2`), dan Tailwind CSS (`3.4.18`) di klien, serta `jsonwebtoken` (`9.0.2`), `bcryptjs` (`3.0.3`), dan `express-validator` (`7.3.0`) di server.
+
+## Catatan implementasi
+
+### Migrasi dan setup yang dapat diulang
+
+Enam file SQL bernomor membangun skema secara berurutan: pengguna, tugas dan tag, komentar, notifikasi, lalu skema lanjutan yang menambahkan tim, proyek, dan tiga enum peran. File seed terakhir memasukkan tiga akun demo, sebuah tim, sebuah proyek, keanggotaan, tiga tugas, tag, komentar, dan notifikasi. Runner mencatat file yang sudah diterapkan di `schema_migrations` dan membungkus setiap file dalam transaksi. Pembuatan tabel memakai `IF NOT EXISTS`, penambahan kolom memakai `ADD COLUMN IF NOT EXISTS`, dan seed memakai `ON CONFLICT DO NOTHING`, sehingga container baru dan container yang dimulai ulang menuju keadaan yang sama.
+
+### Validasi, otorisasi, dan isolasi
+
+Aturan express-validator mencakup autentikasi, tugas, proyek, tim, anggota, komentar, dan ID; input yang tidak valid menghasilkan respons 400 terstruktur. Semua nilai dinamis dalam SQL memakai parameter. Tiga lapisan otorisasi diselesaikan sebelum controller berjalan: peran global (`admin`, `manager`, `member`), peran proyek atau tim (`owner`, `manager`, `member`), dan status sebagai penerima tugas. Query daftar tugas hanya menerima admin, tugas tanpa proyek yang dibuat oleh pemanggil, dan tugas dalam proyek tempat pemanggil memiliki baris keanggotaan. Isolasi resource diuji dengan akun luar yang mendapat 403 untuk operasi baca dan tulis. Filter dan pencarian tugas tersedia; pagination belum diimplementasikan.
+
+### Persistensi Kanban
+
+Tiga kolom memetakan nilai enum `todo`, `in-progress`, dan `completed`. Kartu dapat dipindahkan dengan drag-and-drop bawaan HTML5 dan tetap dapat diakses lewat keyboard. Pemindahan memperbarui store Pinia lebih dulu, mengirim status dan posisi baru ke `PATCH /api/tasks/:id/status`, lalu mengembalikan status lama jika permintaan gagal. Penyelesaian tugas juga menetapkan progres ke 100. Validasi hanya memeriksa bahwa status termasuk enum, sehingga status valid apa pun saat ini dapat diubah dari status lain mana pun.
+
+### Batas real-time
+
+Handshake socket memverifikasi JWT yang sama dengan REST dan memuat pengguna dari database. Setiap koneksi bergabung ke `user:<id>` dan ke room proyek tempat pengguna memiliki keanggotaan; admin bergabung ke semua room proyek. Perubahan keanggotaan memanggil helper sinkronisasi yang menggabungkan atau mengeluarkan socket yang bersangkutan. Event tugas, komentar, dan progres dikirim ke room proyek, sementara notifikasi ditujukan ke room `user:<id>`. Listener untuk event utama berada di `App.vue` agar bertahan setelah reconnect, dan interceptor Axios memutus socket serta menghapus sesi saat menerima 401.
+
+### Alur container
+
+Tiga layanan memakai port host yang dapat diatur lewat environment variabel. Image backend memasang dependency produksi saja, berjalan sebagai pengguna non-root, dan dimulai dengan `npm run migrate && npm start`. Frontend dibangun dalam dua tahap lalu hasil Vite disalin ke Nginx. Health check mengatur urutan startup, dan `.dockerignore` di root menjaga dependency terpasang tetap keluar dari kedua konteks build.
+
+## Verifikasi dan QA
+
+Dokumentasi QA mencatat hasil berikut untuk putaran penerimaan akhir:
+
+- Backend: 16 pengujian, 0 kegagalan, memakai test runner bawaan Node.
+- Frontend: build produksi berhasil dengan 140 module yang diproses.
+- Container: `postgres`, `backend`, dan `frontend` semuanya sehat; konfigurasi Compose valid.
+- API dan real-time: perilaku REST, otorisasi, dan isolasi resource lolos; pengujian dua akun mengonfirmasi pembuatan tugas, pembaruan tugas, komentar, dan pengiriman notifikasi tanpa memuat ulang.
+- Browser dan responsif: alur CRUD dan notifikasi lolos pada 1440 × 900, 768 × 1024, dan 390 × 844, tanpa overflow yang dilaporkan.
+- Pemeriksaan sumber: `git diff --check` terbatas pada sumber bersih; sebelas file tangkapan layar valid diverifikasi terhadap aplikasi yang berjalan.
+
+Ini adalah hasil terdokumentasi untuk tumpukan evaluasi lokal, bukan bukti bahwa semua skenario produksi sudah diuji. Port host 5000 dan 8080 sedang terpakai di mesin QA, sehingga verifikasi memakai 5001 dan 8081. Laporan rinci ditulis pada commit `974d4b7`; head lokal saat ini menambahkan commit kebersihan dependency. Tidak ada demo daring yang ditautkan, dan tangkapan layar memakai data demo dari seed data.
+
+## Tantangan dan keputusan rekayasa
+
+- **Perbaikan di tempat.** Audit menemukan klien yang mengimpor kode database khusus server, router dan Pinia yang tidak didaftarkan, middleware validasi kosong, skrip pengujian yang selalu gagal, SQL interpolasi, nama event socket yang tidak cocok, dan kunci Compose yang tidak valid. Keputusannya adalah memperbaiki masing-masing di dalam struktur folder yang ada, bukan mengganti framework atau memindahkan direktori utama.
+- **User runtime Nginx.** Deklarasi `USER nginx` membuat Nginx gagal dengan error izin saat mencoba membuat `/var/cache/nginx/client_temp`. Image kini membiarkan entrypoint resmi Nginx menjalankan proses master sebagai root sementara worker tetap tanpa hak istimewa.
+- **Otorisasi real-time.** Socket tidak dipercaya hanya karena berhasil terhubung. Room berasal dari query keanggotaan, diperbarui saat keanggotaan berubah, dan secara eksplisit memasukkan admin; event kemudian ditujukan ke room tersebut, bukan disiarkan ke semua koneksi.
+- **Konflik port saat QA.** Port host yang dikonfigurasi sudah terpakai. Variabel environment `BACKEND_PORT` dan `FRONTEND_PORT` memungkinkan file Compose yang sama diverifikasi di 5001 dan 8081 tanpa mengubah konfigurasi yang tersimpan.
+- **Panel notifikasi mobile.** Panel awalnya melekat pada tombol lonceng dan keluar dari layar pada lebar ponsel. Kini panel dipusatkan di bawah header pada layar kecil dan tetap melekat pada tombol mulai dari breakpoint `md`.
+- **Aseri browser yang andal.** Salah satu asersi QA awal memeriksa notifikasi memakai akun admin, yang tidak memiliki notifikasi dari seed data. Beralih ke akun demo membuat pemeriksaan menjadi bermakna, dan asersi DOM ditambahkan untuk kondisi seperti `Current members` dan `Initial review completed`.
+
+## Ruang lingkup dan keterbatasan
+
+Berikut ini memang belum diimplementasikan: pengarsipan proyek, endpoint update dan hapus tim, notifikasi tandai belum dibaca, transisi status yang dibatasi, pembatasan penerima tugas pada anggota proyek atau tim, pengubahan judul dan deskripsi tugas di antarmuka, serta pagination. Registrasi, indikator mengetik, dan event progres proyek lewat socket sudah ada tetapi belum sepenuhnya diverifikasi end to end dalam matriks browser akhir.
+
+Tidak ada skrip lint atau typecheck, pipeline CI/CD, monitoring produksi, strategi backup, atau pengerasan deployment selain pengaturan container yang didokumentasikan. JWT tidak memiliki rotasi refresh atau daftar pencabutan, tidak ada rate limiting maupun penguncian akun, dan port 5432 PostgreSQL masih diekspos untuk pengembangan lokal. Kata sandi akun demo hanya untuk evaluasi lokal. Semua ini merupakan kandidat pekerjaan berikutnya, bukan fitur yang sudah selesai; deployment produksi memerlukan tinjauan keamanan dan operasional tersendiri.
+
+## Catatan penutup
+
+Proyek ini menunjukkan aplikasi full-stack yang disusun dari titik awal yang tidak sempurna menjadi sesuatu yang koheren: model relasional dengan peran yang tegas, API yang memegang keputusan akses, lapisan real-time yang mencerminkan keputusan tersebut lewat room, serta tumpukan container yang dimulai secara teratur. Pelajaran paling berguna adalah otorisasi real-time tidak bisa menjadi rencana belakangan — ia harus memakai aturan keanggotaan yang sama dengan API, termasuk ketika keanggotaan berubah.
+
+Keadaan saat ini adalah aplikasi lokal yang selesai dan terdokumentasi QA dengan data demo dari seed data serta sebuah repositori, bukan layanan produksi yang dihosting atau dikeraskan. Proyek ini disajikan di sini sebagai studi kasus teknis tentang implementasi, verifikasi, dan keputusan rekayasa di baliknya.

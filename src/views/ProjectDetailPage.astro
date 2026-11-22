@@ -189,7 +189,7 @@ const jsonLd = {
           <h2>{t('projects.gallery')}</h2>
           <div class="project-gallery">
             {project.data.screenshots.map((screenshot) => (
-              <figure class:list={['project-gallery__item', { 'project-gallery__item--wide': screenshot.wide }]}>
+              <figure class:list={['project-gallery__item', { 'project-gallery__item--wide': screenshot.wide, 'project-gallery__item--portrait': screenshot.portrait }]}>
                 <img
                   src={screenshot.src}
                   alt={screenshot.alt}
@@ -435,6 +435,11 @@ const jsonLd = {
   .project-gallery__item--wide {
     grid-column: 1 / -1;
     max-width: 720px;
+  }
+
+  .project-gallery__item--portrait {
+    justify-self: center;
+    max-width: 320px;
   }
 
   .project-gallery__item img {

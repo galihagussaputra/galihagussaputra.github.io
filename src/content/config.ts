@@ -38,6 +38,7 @@ const projectScreenshot = z.object({
   width: z.number(),
   height: z.number(),
   wide: z.boolean().default(false),
+  portrait: z.boolean().default(false),
 });
 
 const projects = defineCollection({
